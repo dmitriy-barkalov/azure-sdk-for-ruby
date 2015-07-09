@@ -40,12 +40,10 @@ describe Azure::Table::TableService do
 
     it "deletes an entity" do 
       result = subject.delete_entity table_name, entity_properties["PartitionKey"], entity_properties["RowKey"]
-      result.must_be_nil
+      expect(result).to be_nil
 
       # query entity to make sure it was deleted
-      assert_raises(Azure::Core::Http::HTTPError, "ResourceNotFound (404): The specified resource does not exist.") do
-        subject.get_entity table_name, entity_properties["PartitionKey"], entity_properties["RowKey"]
-      end
+      expect { subject.get_entity table_name, entity_properties["PartitionKey"], entity_properties["RowKey"] }.to raise_error(Azure::Core::Http::HTTPError, "ResourceNotFound (404): The specified resource does not exist.")
     end
 
     it "deletes complex keys" do
@@ -54,41 +52,35 @@ describe Azure::Table::TableService do
       entity["RowKey"] = "key with spaces"
       subject.insert_entity table_name, entity
       result = subject.delete_entity table_name, entity["PartitionKey"], entity["RowKey"]
-      result.must_be_nil
+      expect(result).to be_nil
 
       entity["RowKey"] = "key'with'quotes"
       subject.insert_entity table_name, entity
       result = subject.delete_entity table_name, entity["PartitionKey"], entity["RowKey"]
-      result.must_be_nil
+      expect(result).to be_nil
 
       # Uncomment when issue 145 (Cannot use GB-18030 characters in strings) is fixed
       #entity["RowKey"] = "keyWithUnicode" + 0xE.chr + 0x8B.chr + 0xA4.chr
       #subject.insert_entity table_name, entity
       #result = subject.delete_entity table_name, entity["PartitionKey"], entity["RowKey"]
-      #result.must_be_nil
+      expect(#result).to be_nil
 
       entity["RowKey"] = "Qbert_Says=.!@%^&"
       subject.insert_entity table_name, entity
       result = subject.delete_entity table_name, entity["PartitionKey"], entity["RowKey"]
-      result.must_be_nil
+      expect(result).to be_nil
     end
 
     it "errors on an invalid table name" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.delete_entity "this_table.cannot-exist!", entity_properties["PartitionKey"], entity_properties["RowKey"]
-      end
+      expect { subject.delete_entity "this_table.cannot-exist!", entity_properties["PartitionKey"], entity_properties["RowKey"] }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an invalid partition key" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.delete_entity table_name, "this_partition/key#is_invalid", entity_properties["RowKey"]
-      end
+      expect { subject.delete_entity table_name, "this_partition/key#is_invalid", entity_properties["RowKey"] }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an invalid row key" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.delete_entity table_name, entity_properties["PartitionKey"], "thisrow/key#is_invalid"
-      end
+      expect { subject.delete_entity table_name, entity_properties["PartitionKey"], "thisrow/key#is_invalid" }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

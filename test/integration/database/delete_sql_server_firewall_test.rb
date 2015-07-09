@@ -37,25 +37,21 @@ describe Azure::SqlDatabaseManagementService do
       subject.delete_sql_server_firewall_rule(server_name, 'rule1')
 
       sql_server_firewalls = subject.list_sql_server_firewall_rules(server_name)
-      sql_server_firewalls.must_be_kind_of Array
-      sql_server_firewalls.first.must_be_kind_of Azure::SqlDatabaseManagement::FirewallRule
-      sql_server_firewalls.size.must_equal 1
+      expect(sql_server_firewalls).to be_a_kind_of(Array)
+      expect(sql_server_firewalls.first).to be_a_kind_of(Azure::SqlDatabaseManagement::FirewallRule)
+      expect(sql_server_firewalls.size).to eq(1)
       firewall = sql_server_firewalls.first
-      firewall.name.must_equal 'rule2'
-      firewall.end_ip_address.must_equal '10.20.30.255'
-      firewall.start_ip_address.must_equal '10.20.30.0'
+      expect(firewall.name).to eq('rule2')
+      expect(firewall.end_ip_address).to eq('10.20.30.255')
+      expect(firewall.start_ip_address).to eq('10.20.30.0')
     end
 
     it 'errors if the sql server does not exist' do
-      assert_raises(Azure::SqlDatabaseManagement::ServerDoesNotExist) {
-        subject.delete_sql_server_firewall_rule('unknown-server', 'rule1')
-      }
+      expect { subject.delete_sql_server_firewall_rule('unknown-server', 'rule1') }.to raise_error(Azure::SqlDatabaseManagement::ServerDoesNotExist)
     end
 
     it 'returns false if the sql server firewall rule does not exist when deleting' do
-      assert_raises(Azure::SqlDatabaseManagement::RuleDoesNotExist) {
-        subject.delete_sql_server_firewall_rule(sql_server.name, rule10)
-      }
+      expect { subject.delete_sql_server_firewall_rule(sql_server.name, rule10) }.to raise_error(Azure::SqlDatabaseManagement::RuleDoesNotExist)
     end
 
   end

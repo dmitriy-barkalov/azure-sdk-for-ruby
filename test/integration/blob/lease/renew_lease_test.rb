@@ -30,13 +30,13 @@ describe Azure::Blob::BlobService do
       subject.create_page_blob container_name, blob_name, length
 
       lease_id = subject.acquire_lease container_name, blob_name
-      lease_id.wont_be_nil
+      expect(lease_id).not_to be_nil
 
       new_lease_id = subject.renew_lease container_name, blob_name, lease_id
-      new_lease_id.wont_be_nil
+      expect(new_lease_id).not_to be_nil
 
       # renewing a lease returns the same lease id
-      new_lease_id.must_equal lease_id
+      expect(new_lease_id).to eq(lease_id)
     end
   end
 end

@@ -31,12 +31,12 @@ describe Azure::Blob::BlobService do
 
     it 'sets and gets metadata for a blob' do
       result = subject.set_blob_metadata container_name, blob_name, metadata
-      result.must_be_nil
+      expect(result).to be_nil
       blob = subject.get_blob_metadata container_name, blob_name
 
       metadata.each { |k,v|
-        blob.metadata.must_include k
-        blob.metadata[k].must_equal v
+        expect(blob.metadata).to include(k)
+        expect(blob.metadata[k]).to eq(v)
       }
     end
 
@@ -48,28 +48,22 @@ describe Azure::Blob::BlobService do
 
         blob = subject.get_blob_metadata container_name, blob_name, { :snapshot => snapshot }
 
-        blob.snapshot.must_equal snapshot
+        expect(blob.snapshot).to eq(snapshot)
         metadata.each { |k,v|
-          blob.metadata.must_include k
-          blob.metadata[k].must_equal v
+          expect(blob.metadata).to include(k)
+          expect(blob.metadata[k]).to eq(v)
         }
           
       end
 
       it 'errors if the snapshot does not exist' do
-        assert_raises(Azure::Core::Http::HTTPError) do
-          subject.get_blob_metadata container_name, blob_name, { :snapshot => "invalidsnapshot" }
-        end
+        expect { subject.get_blob_metadata container_name, blob_name, { :snapshot => "invalidsnapshot" } }.to raise_error(Azure::Core::Http::HTTPError)
       end
     end
     
     it 'errors if the blob name does not exist' do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.get_blob_metadata container_name, "thisblobdoesnotexist"
-      end
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.set_blob_metadata container_name, "thisblobdoesnotexist", metadata
-      end
+      expect { subject.get_blob_metadata container_name, "thisblobdoesnotexist" }.to raise_error(Azure::Core::Http::HTTPError)
+      expect { subject.set_blob_metadata container_name, "thisblobdoesnotexist", metadata }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

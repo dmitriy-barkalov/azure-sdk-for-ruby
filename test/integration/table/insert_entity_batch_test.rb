@@ -52,13 +52,13 @@ describe Azure::Table::TableService do
       batch.insert entity_properties["RowKey"], entity_properties
       results = subject.execute_batch batch
 
-      results[0].must_be_kind_of Azure::Table::Entity
-      results[0].table.must_equal table_name
+      expect(results[0]).to be_a_kind_of(Azure::Table::Entity)
+      expect(results[0].table).to eq(table_name)
       entity_properties.each { |k,v|
         if entity_properties[k].class == Time
-          floor_to(results[0].properties[k].to_f, 6).must_equal floor_to(entity_properties[k].to_f, 6)
+          expect(floor_to(results[0].properties[k].to_f, 6)).to eq(floor_to(entity_properties[k].to_f, 6))
         else
-          results[0].properties[k].must_equal entity_properties[k]
+          expect(results[0].properties[k]).to eq(entity_properties[k])
         end
       }
     end
@@ -68,33 +68,30 @@ describe Azure::Table::TableService do
     end
 
     it "errors on an invalid table name" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        batch = Azure::Table::Batch.new "this_table.cannot-exist!", entity_properties["PartitionKey"]
+      expect { batch = Azure::Table::Batch.new "this_table.cannot-exist!", entity_properties["PartitionKey"]
         batch.insert entity_properties["RowKey"], entity_properties
         results = subject.execute_batch batch
-      end
+       }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an invalid partition key" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        entity = entity_properties.dup
+      expect { entity = entity_properties.dup
         entity["PartitionKey"] = "this/partition\\key#is?invalid"
 
         batch = Azure::Table::Batch.new table_name, entity["PartitionKey"]
         batch.insert entity["RowKey"], entity
         results = subject.execute_batch batch
-      end
+       }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an invalid row key" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        entity = entity_properties.dup
+      expect { entity = entity_properties.dup
         entity["RowKey"] = "this/row\\key#is?invalid"
 
         batch = Azure::Table::Batch.new table_name, entity["PartitionKey"]
         batch.insert entity["RowKey"], entity
         results = subject.execute_batch batch
-      end
+       }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

@@ -25,21 +25,17 @@ describe Azure::Queue::QueueService do
 
     it "deletes a queue and returns nil on success" do
       result = subject.delete_queue(queue_name)
-      result.must_be_nil
+      expect(result).to be_nil
       result = subject.list_queues
-      result.each { |q| q.name.wont_equal queue_name }
+      result.each { |q| expect(q.name).not_to eq(queue_name) }
     end
 
     it "errors on an non-existent queue" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.delete_queue QueueNameHelper.name
-      end
+      expect { subject.delete_queue QueueNameHelper.name }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an invalid queue" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.delete_queue "this_queue.cannot-exist!"
-      end
+      expect { subject.delete_queue "this_queue.cannot-exist!" }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

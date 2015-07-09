@@ -25,16 +25,14 @@ describe Azure::Table::TableService do
 
     it "deletes a table and returns nil on success" do
       result = subject.delete_table(table_name)
-      result.must_be_nil
+      expect(result).to be_nil
       
       tables = subject.query_tables
-      tables.wont_include table_name
+      expect(tables).not_to include(table_name)
     end
 
     it "errors on an invalid table" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.delete_table "this_table.cannot-exist!"
-      end
+      expect { subject.delete_table "this_table.cannot-exist!" }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

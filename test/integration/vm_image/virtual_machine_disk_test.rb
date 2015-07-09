@@ -24,12 +24,12 @@ describe Azure::VirtualMachineImageManagement::VirtualMachineDiskManagementServi
 
     it "returns a list of virtual machine disks" do
       vm_disks = subject.list_virtual_machine_disks
-      vm_disks.wont_be_nil
-      vm_disks.must_be_kind_of Array
+      expect(vm_disks).not_to be_nil
+      expect(vm_disks).to be_a_kind_of(Array)
       disk = vm_disks.first
-      disk.must_be_kind_of Azure::VirtualMachineImageManagement::VirtualMachineDisk
-      disk.name.wont_be_nil
-      [true, false].must_include disk.attached
+      expect(disk).to be_a_kind_of(Azure::VirtualMachineImageManagement::VirtualMachineDisk)
+      expect(disk.name).not_to be_nil
+      expect([true, false]).to include(disk.attached)
     end
 
   end

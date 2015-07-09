@@ -28,15 +28,13 @@ describe Azure::Queue::QueueService do
 
     it "clears the queue" do
       result = subject.clear_messages queue_name
-      result.must_be_nil
+      expect(result).to be_nil
       result = subject.peek_messages queue_name
-      result.must_be_empty
+      expect(result).to be_empty
     end
 
     it "errors on an non-existent queue" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.clear_messages QueueNameHelper.name
-      end
+      expect { subject.clear_messages QueueNameHelper.name }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

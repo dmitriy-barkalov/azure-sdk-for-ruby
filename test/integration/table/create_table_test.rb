@@ -24,13 +24,11 @@ describe Azure::Table::TableService do
 
     it "creates a table with a valid name" do
       result = subject.create_table(table_name)
-      result.must_be_nil
+      expect(result).to be_nil
     end
 
     it "errors on an invalid table name" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.create_table "this_table.cannot-exist!"
-      end
+      expect { subject.create_table "this_table.cannot-exist!" }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

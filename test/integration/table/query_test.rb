@@ -61,16 +61,16 @@ describe Azure::Table::TableService do
       q = Azure::Table::Query.new.from table_name
 
       result = q.execute
-      result.must_be_kind_of Array 
-      result.length.must_equal ((partitions.length + 1) * entities_per_partition)
+      expect(result).to be_a_kind_of(Array)
+      expect(result.length).to eq(((partitions.length + 1) * entities_per_partition))
 
       result.each { |e|
-        entities[e.properties["PartitionKey"]].must_include e.properties["RowKey"]
+        expect(entities[e.properties["PartitionKey"]]).to include(e.properties["RowKey"])
         entity_properties.each { |k,v|
           unless v.class == Time
-            e.properties[k].must_equal v
+            expect(e.properties[k]).to eq(v)
           else
-            e.properties[k].to_i.must_equal v.to_i
+            expect(e.properties[k].to_i).to eq(v.to_i)
           end
         }
       }
@@ -86,16 +86,16 @@ describe Azure::Table::TableService do
         .row(row_key)
 
       result = q.execute
-      result.must_be_kind_of Array 
-      result.length.must_equal 1
+      expect(result).to be_a_kind_of(Array)
+      expect(result.length).to eq(1)
 
       result.each { |e|
-        e.properties["RowKey"].must_equal row_key
+        expect(e.properties["RowKey"]).to eq(row_key)
         entity_properties.each { |k,v|
           unless v.class == Time
-            e.properties[k].must_equal v
+            expect(e.properties[k]).to eq(v)
           else
-            e.properties[k].to_i.must_equal v.to_i
+            expect(e.properties[k].to_i).to eq(v.to_i)
           end
         }
       }
@@ -110,14 +110,14 @@ describe Azure::Table::TableService do
         .select(projection[1])
 
       result = q.execute
-      result.must_be_kind_of Array 
-      result.length.must_equal ((partitions.length + 1) * entities_per_partition)
+      expect(result).to be_a_kind_of(Array)
+      expect(result.length).to eq(((partitions.length + 1) * entities_per_partition))
 
       result.each { |e|
-        e.properties.length.must_equal projection.length
-        e.properties["CustomIntegerProperty"].must_equal entity_properties["CustomIntegerProperty"]
-        e.properties.must_include "ThisPropertyDoesNotExist"
-        e.properties["ThisPropertyDoesNotExist"].must_equal ""
+        expect(e.properties.length).to eq(projection.length)
+        expect(e.properties["CustomIntegerProperty"]).to eq(entity_properties["CustomIntegerProperty"])
+        expect(e.properties).to include("ThisPropertyDoesNotExist")
+        expect(e.properties["ThisPropertyDoesNotExist"]).to eq("")
       }
     end
 
@@ -135,17 +135,17 @@ describe Azure::Table::TableService do
         .where("CustomBooleanProperty eq false")
 
       result = q.execute
-      result.must_be_kind_of Array 
-      result.length.must_equal 1
-      result.first.properties["PartitionKey"].must_equal "filter-test-partition"
+      expect(result).to be_a_kind_of(Array)
+      expect(result.length).to eq(1)
+      expect(result.first.properties["PartitionKey"]).to eq("filter-test-partition")
 
       q = Azure::Table::Query.new
         .from(table_name)
         .where("CustomIntegerProperty gt #{entity_properties['CustomIntegerProperty']}")
         .where("CustomBooleanProperty eq true")
       result = q.execute
-      result.must_be_kind_of Array 
-      result.length.must_equal 0
+      expect(result).to be_a_kind_of(Array)
+      expect(result.length).to eq(0)
     end
 
     it "can limit the result set using the top parameter" do
@@ -154,9 +154,9 @@ describe Azure::Table::TableService do
         .top(3)
 
       result = q.execute
-      result.must_be_kind_of Array 
-      result.length.must_equal 3
-      result.continuation_token.wont_be_nil
+      expect(result).to be_a_kind_of(Array)
+      expect(result.length).to eq(3)
+      expect(result.continuation_token).not_to be_nil
     end
 
     it "can page results using the top parameter and continuation_token" do
@@ -165,9 +165,9 @@ describe Azure::Table::TableService do
         .top(3)
 
       result = q.execute
-      result.must_be_kind_of Array 
-      result.length.must_equal 3
-      result.continuation_token.wont_be_nil
+      expect(result).to be_a_kind_of(Array)
+      expect(result.length).to eq(3)
+      expect(result.continuation_token).not_to be_nil
 
       q = Azure::Table::Query.new
         .from(table_name)
@@ -176,9 +176,9 @@ describe Azure::Table::TableService do
         .next_partition(result.continuation_token[:next_partition_key])
 
       result2 = q.execute
-      result2.must_be_kind_of Array 
-      result2.length.must_equal 3
-      result2.continuation_token.wont_be_nil
+      expect(result2).to be_a_kind_of(Array)
+      expect(result2.length).to eq(3)
+      expect(result2.continuation_token).not_to be_nil
 
       q = Azure::Table::Query.new
         .from(table_name)
@@ -187,9 +187,9 @@ describe Azure::Table::TableService do
         .next_partition(result2.continuation_token[:next_partition_key])
 
       result3 = q.execute
-      result3.must_be_kind_of Array 
-      result3.length.must_equal 3
-      result3.continuation_token.wont_be_nil
+      expect(result3).to be_a_kind_of(Array)
+      expect(result3.length).to eq(3)
+      expect(result3.continuation_token).not_to be_nil
 
       q = Azure::Table::Query.new
         .from(table_name)
@@ -198,9 +198,9 @@ describe Azure::Table::TableService do
         .next_partition(result3.continuation_token[:next_partition_key])
 
       result4 = q.execute
-      result4.must_be_kind_of Array 
-      result4.length.must_equal 3
-      result4.continuation_token.must_be_nil
+      expect(result4).to be_a_kind_of(Array)
+      expect(result4.length).to eq(3)
+      expect(result4.continuation_token).to be_nil
     end
 
     it "can combine projection, filtering, and paging in the same query" do
@@ -220,32 +220,32 @@ describe Azure::Table::TableService do
         .top(3)
 
       result = q.execute
-      result.must_be_kind_of Array 
-      result.length.must_equal 3
-      result.continuation_token.wont_be_nil
+      expect(result).to be_a_kind_of(Array)
+      expect(result.length).to eq(3)
+      expect(result.continuation_token).not_to be_nil
 
-      result.first.properties["CustomIntegerProperty"].must_equal entity_properties["CustomIntegerProperty"]
-      result.first.properties["PartitionKey"].wont_be_nil
-      result.first.properties.length.must_equal 2
+      expect(result.first.properties["CustomIntegerProperty"]).to eq(entity_properties["CustomIntegerProperty"])
+      expect(result.first.properties["PartitionKey"]).not_to be_nil
+      expect(result.first.properties.length).to eq(2)
 
       q.next_row(result.continuation_token[:next_row_key]).next_partition(result.continuation_token[:next_partition_key])
 
       result2 = q.execute
-      result2.must_be_kind_of Array 
-      result2.length.must_equal 3
-      result2.continuation_token.wont_be_nil
+      expect(result2).to be_a_kind_of(Array)
+      expect(result2.length).to eq(3)
+      expect(result2.continuation_token).not_to be_nil
 
       q.next_row(result2.continuation_token[:next_row_key]).next_partition(result2.continuation_token[:next_partition_key])
       result3 = q.execute
-      result3.must_be_kind_of Array 
-      result3.length.must_equal 3
-      result3.continuation_token.wont_be_nil
+      expect(result3).to be_a_kind_of(Array)
+      expect(result3.length).to eq(3)
+      expect(result3.continuation_token).not_to be_nil
 
       q.next_row(result3.continuation_token[:next_row_key]).next_partition(result3.continuation_token[:next_partition_key])
       result4 = q.execute
-      result4.must_be_kind_of Array 
-      result4.length.must_equal 3
-      result4.continuation_token.must_be_nil
+      expect(result4).to be_a_kind_of(Array)
+      expect(result4.length).to eq(3)
+      expect(result4.continuation_token).to be_nil
     end
   end
 end

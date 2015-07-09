@@ -29,11 +29,11 @@ describe Azure::SqlDatabaseManagementService do
       server2 = subject.create_server(login_name, 'User2@123', 'East US')
 
       sql_servers = subject.list_servers
-      sql_servers.wont_be_nil
-      sql_servers.must_be_kind_of Array
+      expect(sql_servers).not_to be_nil
+      expect(sql_servers).to be_a_kind_of(Array)
       sql_server = sql_servers.first
-      sql_server.must_be_kind_of Azure::SqlDatabaseManagement::SqlServer
-      assert_operator sql_servers.size, :>=, 2
+      expect(sql_server).to be_a_kind_of(Azure::SqlDatabaseManagement::SqlServer)
+      expect(sql_servers.size).to be >= 2
 
       subject.delete_server(server1.name)
       subject.delete_server(server2.name)

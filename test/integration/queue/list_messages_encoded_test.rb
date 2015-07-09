@@ -29,15 +29,15 @@ describe Azure::Queue::QueueService do
 
     it "returns a message from the queue, marking it as invisible" do
       result = subject.list_messages queue_name, 3, { :decode => true }
-      result.wont_be_nil
-      result.wont_be_empty
-      result.length.must_equal 1
+      expect(result).not_to be_nil
+      expect(result).not_to be_empty
+      expect(result.length).to eq(1)
       message = result[0]
-      message.message_text.must_equal message_text
+      expect(message.message_text).to eq(message_text)
 
       # queue should be empty
       result = subject.list_messages queue_name, 1, { :decode => true }
-      result.must_be_empty
+      expect(result).to be_empty
     end
 
     it "returns multiple messages if passed the optional parameter" do
@@ -45,35 +45,35 @@ describe Azure::Queue::QueueService do
       subject.create_message queue_name, msg_text2, { :encode => true }
 
       result = subject.list_messages queue_name, 3, { :number_of_messages => 2, :decode => true }
-      result.wont_be_nil
-      result.wont_be_empty
-      result.length.must_equal 2
-      result[0].message_text.must_equal message_text
-      result[1].message_text.must_equal msg_text2
-      result[0].id.wont_equal result[1].id
+      expect(result).not_to be_nil
+      expect(result).not_to be_empty
+      expect(result.length).to eq(2)
+      expect(result[0].message_text).to eq(message_text)
+      expect(result[1].message_text).to eq(msg_text2)
+      expect(result[0].id).not_to eq(result[1].id)
     end
 
     it "the visibility_timeout parameter sets the message invisible for the period of time pending delete/update" do
       result = subject.list_messages queue_name, 3, { :decode => true }
-      result.wont_be_nil
-      result.wont_be_empty
-      result.length.must_equal 1
+      expect(result).not_to be_nil
+      expect(result).not_to be_empty
+      expect(result.length).to eq(1)
       message = result[0]
-      message.message_text.must_equal message_text
+      expect(message.message_text).to eq(message_text)
 
       # queue should be empty
       result = subject.list_messages queue_name, 1, { :decode => true }
-      result.must_be_empty
+      expect(result).to be_empty
 
       sleep(3)
 
       # same message is back at the top of the queue after timeout period
       result = subject.list_messages queue_name, 3, { :decode => true }
-      result.wont_be_nil
-      result.wont_be_empty
-      result.length.must_equal 1
+      expect(result).not_to be_nil
+      expect(result).not_to be_empty
+      expect(result.length).to eq(1)
       message2 = result[0]
-      message2.id.must_equal message.id
+      expect(message2.id).to eq(message.id)
     end
   end
 end

@@ -30,13 +30,11 @@ describe Azure::SqlDatabaseManagementService do
       server_name = sql_server.name
       subject.delete_server(server_name)
       sql_server = subject.list_servers.select { |x| x.name == server_name }.first
-      sql_server.must_be_nil
+      expect(sql_server).to be_nil
     end
 
     it 'raise if the sql server does not exist' do
-      assert_raises(Azure::SqlDatabaseManagement::ServerDoesNotExist) {
-        subject.delete_server('unknown-server')
-      }
+      expect { subject.delete_server('unknown-server') }.to raise_error(Azure::SqlDatabaseManagement::ServerDoesNotExist)
     end
 
   end

@@ -49,7 +49,7 @@ describe Azure::Table::TableService do
       rescue
       end
 
-      assert does_not_exist
+      expect(does_not_exist).to be_truthy
 
       batch = Azure::Table::Batch.new table_name, entity["PartitionKey"]
       batch.insert entity["RowKey"], entity
@@ -57,15 +57,15 @@ describe Azure::Table::TableService do
 
       result = subject.get_entity table_name, entity["PartitionKey"], entity["RowKey"]
 
-      result.must_be_kind_of Azure::Table::Entity
-      result.table.must_equal table_name
-      result.etag.wont_be_nil
+      expect(result).to be_a_kind_of(Azure::Table::Entity)
+      expect(result.table).to eq(table_name)
+      expect(result.etag).not_to be_nil
       
       entity.each { |k,v|
         unless entity[k].class == Time
-          result.properties[k].must_equal entity[k]
+          expect(result.properties[k]).to eq(entity[k])
         else
-          result.properties[k].to_i.must_equal entity[k].to_i
+          expect(result.properties[k].to_i).to eq(entity[k].to_i)
         end
       }
     end
@@ -88,7 +88,7 @@ describe Azure::Table::TableService do
       rescue
       end
 
-      assert exists, "cannot verify existing record"
+      expect(exists).to be_truthy "cannot verify existing record"
 
       batch = Azure::Table::Batch.new table_name, entity["PartitionKey"]
       batch.insert_or_merge entity["RowKey"], {
@@ -102,58 +102,55 @@ describe Azure::Table::TableService do
 
       result = subject.get_entity table_name, entity["PartitionKey"], entity["RowKey"]
 
-      result.etag.must_be_kind_of String
-      result.etag.wont_equal existing_etag
+      expect(result.etag).to be_a_kind_of(String)
+      expect(result.etag).not_to eq(existing_etag)
 
-      result.must_be_kind_of Azure::Table::Entity
-      result.table.must_equal table_name
+      expect(result).to be_a_kind_of(Azure::Table::Entity)
+      expect(result.table).to eq(table_name)
       
       # retained all existing props
       entity.each { |k,v|
         if entity[k].class == Time
-          result.properties[k].to_i.must_equal entity[k].to_i
+          expect(result.properties[k].to_i).to eq(entity[k].to_i)
         else
-          result.properties[k].must_equal entity[k]
+          expect(result.properties[k]).to eq(entity[k])
         end
       }
 
       # and has the new one
-      result.properties["NewCustomProperty"].must_equal "NewCustomValue"
-      result.properties["NewNilProperty"].must_equal nil
+      expect(result.properties["NewCustomProperty"]).to eq("NewCustomValue")
+      expect(result.properties["NewNilProperty"]).to eq(nil)
     end
 
     it "errors on an invalid table name" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        entity = entity_properties.dup
+      expect { entity = entity_properties.dup
         entity["RowKey"] = "row_key"
 
         batch = Azure::Table::Batch.new "this_table.cannot-exist!", entity["PartitionKey"]
         batch.insert entity["RowKey"], entity
         result = subject.execute_batch batch
-      end
+       }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an invalid partition key" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        entity = entity_properties.dup
+      expect { entity = entity_properties.dup
         entity["PartitionKey"] = "this/partition_key#is?invalid"
         entity["RowKey"] = "row_key"
 
         batch = Azure::Table::Batch.new table_name, entity["PartitionKey"]
         batch.insert entity["RowKey"], entity
         result = subject.execute_batch batch
-      end
+       }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an invalid row key" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        entity = entity_properties.dup
+      expect { entity = entity_properties.dup
         entity["RowKey"] = "this/partition_key#is?invalid"
 
         batch = Azure::Table::Batch.new table_name, entity["PartitionKey"]
         batch.insert entity["RowKey"], entity
         result = subject.execute_batch batch
-      end
+       }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

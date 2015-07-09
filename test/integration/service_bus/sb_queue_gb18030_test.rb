@@ -58,7 +58,7 @@ describe 'Service Bus Queue GB-18030' do
         }
         flunk "No exception"
       rescue Azure::Core::Http::HTTPError => error
-        error.status_code.must_equal 400
+        expect(error.status_code).to eq(400)
       end
     }
   end
@@ -71,7 +71,7 @@ describe 'Service Bus Queue GB-18030' do
         }
         flunk "No exception"
       rescue Azure::Core::Http::HTTPError => error
-        error.status_code.must_equal 400
+        expect(error.status_code).to eq(400)
       end
     }
   end
@@ -81,7 +81,7 @@ describe 'Service Bus Queue GB-18030' do
       msg = Azure::ServiceBus::BrokeredMessage.new(v.encode("UTF-8"))
       subject.send_queue_message queue_name, msg
       retrieved = subject.read_delete_queue_message queue_name
-      retrieved.body.force_encoding("UTF-8").must_equal v.encode("UTF-8")
+      expect(retrieved.body.force_encoding("UTF-8")).to eq(v.encode("UTF-8"))
     }
   end
 
@@ -90,7 +90,7 @@ describe 'Service Bus Queue GB-18030' do
       msg = Azure::ServiceBus::BrokeredMessage.new(v.encode("GB18030"))
       subject.send_queue_message queue_name, msg
       retrieved = subject.read_delete_queue_message queue_name
-      retrieved.body.force_encoding("GB18030").must_equal v.encode("GB18030")
+      expect(retrieved.body.force_encoding("GB18030")).to eq(v.encode("GB18030"))
     }
   end
 
@@ -104,7 +104,7 @@ describe 'Service Bus Queue GB-18030' do
   #       # Do not flunk here; the service appears to let some
   #       # "bad" strings go through
   #     rescue Azure::Core::Http::HTTPError => error
-  #       error.status_code.must_equal 500
+  expect(#       error.status_code).to eq(500)
   #     end
   #   }
   # end
@@ -119,7 +119,7 @@ describe 'Service Bus Queue GB-18030' do
   #       # Do not flunk here; the service appears to let some
   #       # "bad" strings go through
   #     rescue Azure::Core::Http::HTTPError => error
-  #       error.status_code.must_equal 500
+  expect(#       error.status_code).to eq(500)
   #     end
   #   }
   # end
@@ -133,7 +133,7 @@ describe 'Service Bus Queue GB-18030' do
         subject.send_queue_message queue_name, msg
         flunk "No exception"
       rescue Azure::Core::Http::HTTPError => error
-        error.status_code.must_equal 400
+        expect(error.status_code).to eq(400)
       end
     }
   end
@@ -147,7 +147,7 @@ describe 'Service Bus Queue GB-18030' do
         subject.send_queue_message queue_name, msg
         flunk "No exception"
       rescue Azure::Core::Http::HTTPError => error
-        error.status_code.must_equal 400
+        expect(error.status_code).to eq(400)
       end
     }
   end
@@ -175,7 +175,7 @@ describe 'Service Bus Queue GB-18030' do
   #       # Do not flunk here; the service appears to let some
   #       # "bad" strings go through
   #     rescue Azure::Core::Http::HTTPError => error
-  #       error.status_code.must_equal 500
+  expect(#       error.status_code).to eq(500)
   #     end
   #   }
   # end

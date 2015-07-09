@@ -33,10 +33,10 @@ describe Azure::SqlDatabaseManagementService do
 
     it 'returns a list of SQL databse server firewall' do
       sql_server_firewalls = subject.list_sql_server_firewall_rules(sql_server.name)
-      sql_server_firewalls.wont_be_nil
-      sql_server_firewalls.must_be_kind_of Array
-      sql_server_firewalls.first.must_be_kind_of Azure::SqlDatabaseManagement::FirewallRule
-      sql_server_firewalls.size.must_equal 2
+      expect(sql_server_firewalls).not_to be_nil
+      expect(sql_server_firewalls).to be_a_kind_of(Array)
+      expect(sql_server_firewalls.first).to be_a_kind_of(Azure::SqlDatabaseManagement::FirewallRule)
+      expect(sql_server_firewalls.size).to eq(2)
     end
 
   end

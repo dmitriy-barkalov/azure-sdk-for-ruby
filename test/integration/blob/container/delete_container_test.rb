@@ -27,13 +27,11 @@ describe Azure::Blob::BlobService do
 
     it 'deletes the container' do
       result = subject.delete_container container_name
-      result.must_be_nil
+      expect(result).to be_nil
     end
 
     it 'errors if the container does not exist' do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.delete_container ContainerNameHelper.name
-      end
+      expect { subject.delete_container ContainerNameHelper.name }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

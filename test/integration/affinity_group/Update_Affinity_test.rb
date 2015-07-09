@@ -42,17 +42,17 @@ describe Azure::BaseManagementService do
       label = 'updated label'
       subject.update_affinity_group(affinity_group_name, label)
       affinity_group = subject.get_affinity_group(affinity_group_name)
-      affinity_group.wont_be_nil
-      affinity_group.label.must_equal label
+      expect(affinity_group).not_to be_nil
+      expect(affinity_group.label).to eq(label)
     end
 
     it "update affinity group's description with valid input" do
       label = 'Updated Label'
       subject.update_affinity_group(affinity_group_name, label, options)
       affinity_group = subject.get_affinity_group(affinity_group_name)
-      affinity_group.wont_be_nil
-      affinity_group.description.must_equal options[:description]
-      affinity_group.label.must_equal label
+      expect(affinity_group).not_to be_nil
+      expect(affinity_group.description).to eq(options[:description])
+      expect(affinity_group.label).to eq(label)
     end
 
     it "should update only affinity group's label" do
@@ -60,28 +60,22 @@ describe Azure::BaseManagementService do
       affinity_group1 = subject.get_affinity_group(affinity_group_name)
       subject.update_affinity_group(affinity_group_name, label)
       affinity_group = subject.get_affinity_group(affinity_group_name)
-      affinity_group.wont_be_nil
-      affinity_group.description.must_equal affinity_group1.description
-      affinity_group.label.must_equal label
+      expect(affinity_group).not_to be_nil
+      expect(affinity_group.description).to eq(affinity_group1.description)
+      expect(affinity_group.label).to eq(label)
     end
 
     it 'error if description content exceeds allowed limit of 1024 chars' do
       options = {description: 'a' * 1025}
-      exception = assert_raises(RuntimeError) do
-        subject.update_affinity_group(affinity_group_name,
-                                      'this is update operation',
-                                      options)
-      end
-      assert_match(/The description for the affinity group is invalid./i,
-                   exception.message)
+      expect { subject.update_affinity_group(affinity_group_name,
+                                             'this is update operation',
+                                             options) }
+          .to raise_error(RuntimeError, /The description for the affinity group is invalid./i)
     end
 
     it 'error in case of updating non existing affinity group' do
       affinity_name = 'unkown-affinity-group'
-      exception = assert_raises(Azure::Error::Error) do
-        subject.update_affinity_group(affinity_name, 'updated label', options)
-      end
-      assert_match(/The affinity group does not exist./i, exception.message)
+      expect { subject.update_affinity_group(affinity_name, 'updated label', options) }.to raise_error(Azure::Error::Error, /The affinity group does not exist./i)
     end
   end
 end

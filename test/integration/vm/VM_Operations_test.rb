@@ -44,17 +44,17 @@ describe Azure::VirtualMachineManagementService do
       it 'shuts down virtual machine' do
         subject.shutdown_virtual_machine(vm_name, csn)
         vm = subject.get_virtual_machine(vm_name, csn)
-        %w(StoppedVM StoppedDeallocated).must_include  vm.status
+        expect(%w(StoppedVM StoppedDeallocated)).to include(vm.status)
 
         msg = subject.shutdown_virtual_machine(vm_name, csn)
         emsg = 'Cannot perform the shutdown operation on a stopped virtual machine'
-        assert_match(/#{emsg}/, msg)
+        expect(msg).to match(/#{emsg}/)
       end
 
       it 'raises an error if virtual machine doesn\'t exists' do
         name = 'test-shutdown'
         msg = subject.shutdown_virtual_machine(name, csn)
-        assert_match(/Cannot find virtual machine \"#{name}\" under cloud service \"#{csn}\"/, msg)
+        expect(msg).to match(/Cannot find virtual machine \"#{name}\" under cloud service \"#{csn}\"/)
       end
 
     end
@@ -68,7 +68,7 @@ describe Azure::VirtualMachineManagementService do
         subject.start_virtual_machine(vm_name, csn)
         vm = subject.get_virtual_machine(vm_name, csn)
         statuses = %w(ReadyRole Provisioning CreatingVM RoleStateUnknown)
-        statuses.must_include  vm.status
+        expect(statuses).to include(vm.status)
       end
 
     end
@@ -80,27 +80,27 @@ describe Azure::VirtualMachineManagementService do
 
       it 'restarts virtual machine' do
         vm = subject.get_virtual_machine(vm_name, csn)
-        %w(ReadyRole Provisioning RoleStateUnknown).must_include  vm.status
+        expect(%w(ReadyRole Provisioning RoleStateUnknown)).to include(vm.status)
       end
     end
 
     describe '#get_virtual_machine' do
       it 'should return virtual machine object' do
         vm = subject.get_virtual_machine(vm_name, csn)
-        vm.vm_name.must_equal vm_name
-        vm.cloud_service_name.must_equal csn
+        expect(vm.vm_name).to eq(vm_name)
+        expect(vm.cloud_service_name).to eq(csn)
       end
     end
 
     describe '#list_virtual_machines' do
       it 'returns a list of virtual machines' do
         vms = subject.list_virtual_machines
-        vms.wont_be_nil
-        vms.must_be_kind_of Array
+        expect(vms).not_to be_nil
+        expect(vms).to be_a_kind_of(Array)
         vm = vms.first
-        vm.must_be_kind_of Azure::VirtualMachineManagement::VirtualMachine
+        expect(vm).to be_a_kind_of(Azure::VirtualMachineManagement::VirtualMachine)
         vm_names = vms.map(&:vm_name)
-        vm_names.must_include  vm.vm_name
+        expect(vm_names).to include(vm.vm_name)
       end
     end
 
@@ -111,8 +111,8 @@ describe Azure::VirtualMachineManagementService do
         dms = VirtualMachineDiskManagementService.new
         disks = dms.list_virtual_machine_disks
         disks = disks.select { |x| (/#{csn}/ =~ x.name) && x.os_type.empty? }
-        assert_operator disks.size, :>=, 1
-        disks.first.size.must_equal others[:disk_size].to_s
+        expect(disks.size).to be >= 1
+        expect(disks.first.size).to eq(others[:disk_size].to_s)
       end
     end
 
@@ -135,9 +135,9 @@ describe Azure::VirtualMachineManagementService do
         }
         subject.update_endpoints(vm_name, csn,  ep1, ep2)
         vm = subject.get_virtual_machine(vm_name, csn)
-        vm.udp_endpoints.size.must_equal 2
-        vm.udp_endpoints.first[:name].must_equal 'endpoint-1'
-        vm.udp_endpoints.last[:name].must_equal 'endpoint-2'
+        expect(vm.udp_endpoints.size).to eq(2)
+        expect(vm.udp_endpoints.first[:name]).to eq('endpoint-1')
+        expect(vm.udp_endpoints.last[:name]).to eq('endpoint-2')
       end
 
       it 'should update existing endpoints of virtual machine.' do
@@ -149,15 +149,15 @@ describe Azure::VirtualMachineManagementService do
         }
         subject.update_endpoints(vm_name, csn,  ep1)
         vm = subject.get_virtual_machine(vm_name, csn)
-        vm.tcp_endpoints.size.must_equal 1
-        vm.tcp_endpoints.first[:name].must_equal 'SSH'
-        vm.tcp_endpoints.first[:public_port].must_equal '2222'
+        expect(vm.tcp_endpoints.size).to eq(1)
+        expect(vm.tcp_endpoints.first[:name]).to eq('SSH')
+        expect(vm.tcp_endpoints.first[:public_port]).to eq('2222')
       end
 
       it 'should delete endpoint of virtual machine.' do
         subject.delete_endpoint(vm_name, csn,  'SSH')
         vm = subject.get_virtual_machine(vm_name, csn)
-        vm.tcp_endpoints.size.must_equal 0
+        expect(vm.tcp_endpoints.size).to eq(0)
         ep1 =  {
           name: 'SSH',
           public_port: 22,

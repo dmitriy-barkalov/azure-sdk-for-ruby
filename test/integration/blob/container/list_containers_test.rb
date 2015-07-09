@@ -35,7 +35,7 @@ describe Azure::Blob::BlobService do
       result.each { |c|
         found += 1 if container_names.include? c.name
       }
-      found.must_equal container_names.length
+      expect(found).to eq(container_names.length)
     end
 
     it 'lists the containers for the account with prefix' do
@@ -46,18 +46,18 @@ describe Azure::Blob::BlobService do
         found += 1 if container_names.include? c.name
       }
 
-      found.must_equal 1
+      expect(found).to eq(1)
     end
 
     it 'lists the containers for the account with max results' do
       result =  subject.list_containers({ :max_results => 1 })
-      result.length.must_equal 1
+      expect(result.length).to eq(1)
       first_container = result[0]
-      result.continuation_token.wont_equal("")
+      expect(result.continuation_token).not_to eq("")
 
       result =  subject.list_containers({ :max_results => 1, :marker => result.continuation_token })
-      result.length.must_equal 1
-      result[0].name.wont_equal first_container.name
+      expect(result.length).to eq(1)
+      expect(result[0].name).not_to eq(first_container.name)
     end
 
     it 'returns metadata if the :metadata=>true option is used' do
@@ -68,12 +68,12 @@ describe Azure::Blob::BlobService do
         if container_names.include? c.name
           found += 1 
           metadata.each { |k,v|
-            c.metadata.must_include k.downcase
-            c.metadata[k.downcase].must_equal v
+            expect(c.metadata).to include(k.downcase)
+            expect(c.metadata[k.downcase]).to eq(v)
           }
         end
       }
-      found.must_equal container_names.length
+      expect(found).to eq(container_names.length)
     end
   end
 end

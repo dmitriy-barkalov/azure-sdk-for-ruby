@@ -33,12 +33,12 @@ describe Azure::BaseManagementService do
                                     label_name,
                                     options)
       affinity = subject.get_affinity_group(affinity_group_name)
-      affinity.must_be_kind_of Azure::BaseManagement::AffinityGroup
-      affinity.name.must_equal affinity_group_name
-      affinity.label.must_equal label_name
-      affinity.description.must_equal options[:description]
-      affinity.capability.wont_be_nil
-      affinity.capability.wont_equal []
+      expect(affinity).to be_a_kind_of(Azure::BaseManagement::AffinityGroup)
+      expect(affinity.name).to eq(affinity_group_name)
+      expect(affinity.label).to eq(label_name)
+      expect(affinity.description).to eq(options[:description])
+      expect(affinity.capability).not_to be_nil
+      expect(affinity.capability).not_to eq([])
       AffinityGroupNameHelper.clean
     end
 
@@ -47,8 +47,8 @@ describe Azure::BaseManagementService do
       begin
         subject.get_affinity_group(affinity_group_name)
       rescue Azure::Error::Error => error
-        error.status_code.must_equal 404
-        error.type.must_equal 'AffinityGroupNotFound'
+        expect(error.status_code).to eq(404)
+        expect(error.type).to eq('AffinityGroupNotFound')
       end
     end
   end

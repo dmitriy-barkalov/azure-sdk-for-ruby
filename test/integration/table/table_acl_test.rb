@@ -39,14 +39,14 @@ describe Azure::Table::TableService do
       subject.set_table_acl(table_name, { :signed_identifiers => [ signed_identifier ] })
 
       result = subject.get_table_acl table_name
-      result.must_be_kind_of Array
+      expect(result).to be_a_kind_of(Array)
 
-      result.wont_be_empty
-      result.last.must_be_kind_of Azure::Service::SignedIdentifier
-      result.last.id.must_equal signed_identifier.id
-      result.last.access_policy.start.must_equal signed_identifier.access_policy.start
-      result.last.access_policy.expiry.must_equal signed_identifier.access_policy.expiry
-      result.last.access_policy.permission.must_equal signed_identifier.access_policy.permission
+      expect(result).not_to be_empty
+      expect(result.last).to be_a_kind_of(Azure::Service::SignedIdentifier)
+      expect(result.last.id).to eq(signed_identifier.id)
+      expect(result.last.access_policy.start).to eq(signed_identifier.access_policy.start)
+      expect(result.last.access_policy.expiry).to eq(signed_identifier.access_policy.expiry)
+      expect(result.last.access_policy.permission).to eq(signed_identifier.access_policy.permission)
     end
   end
 end

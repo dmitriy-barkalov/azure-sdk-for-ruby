@@ -37,33 +37,29 @@ describe Azure::Blob::BlobService do
 
     it 'sets and gets the ACL for the container' do
       container, acl = subject.set_container_acl container_name, public_access_level, { :signed_identifiers => identifiers }
-      container.wont_be_nil
-      container.name.must_equal container_name
-      container.public_access_level.must_equal public_access_level.to_s
-      acl.length.must_equal identifiers.length
-      acl.first.id.must_equal identifiers.first.id
-      acl.first.access_policy.start.must_equal identifiers.first.access_policy.start
-      acl.first.access_policy.expiry.must_equal identifiers.first.access_policy.expiry
-      acl.first.access_policy.permission.must_equal identifiers.first.access_policy.permission
+      expect(container).not_to be_nil
+      expect(container.name).to eq(container_name)
+      expect(container.public_access_level).to eq(public_access_level.to_s)
+      expect(acl.length).to eq(identifiers.length)
+      expect(acl.first.id).to eq(identifiers.first.id)
+      expect(acl.first.access_policy.start).to eq(identifiers.first.access_policy.start)
+      expect(acl.first.access_policy.expiry).to eq(identifiers.first.access_policy.expiry)
+      expect(acl.first.access_policy.permission).to eq(identifiers.first.access_policy.permission)
 
       container, acl = subject.get_container_acl container_name
-      container.wont_be_nil
-      container.name.must_equal container_name
-      container.public_access_level.must_equal public_access_level.to_s
-      acl.length.must_equal identifiers.length
-      acl.first.id.must_equal identifiers.first.id
-      acl.first.access_policy.start.must_equal identifiers.first.access_policy.start
-      acl.first.access_policy.expiry.must_equal identifiers.first.access_policy.expiry
-      acl.first.access_policy.permission.must_equal identifiers.first.access_policy.permission
+      expect(container).not_to be_nil
+      expect(container.name).to eq(container_name)
+      expect(container.public_access_level).to eq(public_access_level.to_s)
+      expect(acl.length).to eq(identifiers.length)
+      expect(acl.first.id).to eq(identifiers.first.id)
+      expect(acl.first.access_policy.start).to eq(identifiers.first.access_policy.start)
+      expect(acl.first.access_policy.expiry).to eq(identifiers.first.access_policy.expiry)
+      expect(acl.first.access_policy.permission).to eq(identifiers.first.access_policy.permission)
     end
 
     it 'errors if the container does not exist' do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.get_container_acl ContainerNameHelper.name
-      end
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.set_container_acl ContainerNameHelper.name, public_access_level, { :identifiers => identifiers }
-      end
+      expect { subject.get_container_acl ContainerNameHelper.name }.to raise_error(Azure::Core::Http::HTTPError)
+      expect { subject.set_container_acl ContainerNameHelper.name, public_access_level, { :identifiers => identifiers } }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

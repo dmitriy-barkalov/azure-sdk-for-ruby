@@ -33,9 +33,9 @@ describe Azure::Queue::QueueService do
         subject.get_queue_metadata queue_name
         flunk "No exception"
       rescue Azure::Core::Http::HTTPError => error
-        error.status_code.must_equal 404
-        error.type.must_equal "QueueNotFound"
-        error.description.start_with?("The specified queue does not exist.").must_equal true
+        expect(error.status_code).to eq(404)
+        expect(error.type).to eq("QueueNotFound")
+        expect(error.description.start_with?("The specified queue does not exist.")).to eq(true)
       end
     end
   end

@@ -40,8 +40,8 @@ describe "ServiceBus Topics Scenario" do
       subject.delete_topic topic_name
     rescue Azure::Core::Http::HTTPError => error
       ScenarioHelper.out "could not get an existing topic (" + error.type + "), proceeding..."
-      error.status_code.must_equal 404
-      error.type.must_equal "ResourceNotFound"
+      expect(error.status_code).to eq(404)
+      expect(error.type).to eq("ResourceNotFound")
     end
 
     t = Azure::ServiceBus::Topic.new(topic_name, {
@@ -49,9 +49,9 @@ describe "ServiceBus Topics Scenario" do
       :requires_duplicate_detection => true,
       :enable_batched_operations => true
     })
-    t.max_size_in_megabytes.must_equal 1024
-    t.requires_duplicate_detection.must_equal true
-    t.enable_batched_operations.must_equal true
+    expect(t.max_size_in_megabytes).to eq(1024)
+    expect(t.requires_duplicate_detection).to eq(true)
+    expect(t.enable_batched_operations).to eq(true)
 
     ScenarioHelper.out 'Creating topic ' + topic_name
     t2 = subject.create_topic topic_name, {
@@ -59,9 +59,9 @@ describe "ServiceBus Topics Scenario" do
       :requires_duplicate_detection => true,
       :enable_batched_operations => true
     }
-    t2.max_size_in_megabytes.must_equal 1024
-    t2.requires_duplicate_detection.must_equal true
-    t2.enable_batched_operations.must_equal true
+    expect(t2.max_size_in_megabytes).to eq(1024)
+    expect(t2.requires_duplicate_detection).to eq(true)
+    expect(t2.enable_batched_operations).to eq(true)
 
     success = false
     retry_counter = 0
@@ -90,11 +90,11 @@ describe "ServiceBus Topics Scenario" do
     s.topic = topic_name
 
     s_prime = subject.create_subscription s
-    s_prime.dead_lettering_on_filter_evaluation_exceptions.must_equal s.dead_lettering_on_filter_evaluation_exceptions
-    s_prime.dead_lettering_on_message_expiration.must_equal s.dead_lettering_on_message_expiration
-    s_prime.enable_batched_operations.must_equal s.enable_batched_operations
-    s_prime.max_delivery_count.must_equal s.max_delivery_count
-    s_prime.requires_session.must_equal s.requires_session
+    expect(s_prime.dead_lettering_on_filter_evaluation_exceptions).to eq(s.dead_lettering_on_filter_evaluation_exceptions)
+    expect(s_prime.dead_lettering_on_message_expiration).to eq(s.dead_lettering_on_message_expiration)
+    expect(s_prime.enable_batched_operations).to eq(s.enable_batched_operations)
+    expect(s_prime.max_delivery_count).to eq(s.max_delivery_count)
+    expect(s_prime.requires_session).to eq(s.requires_session)
 
     s2 = subject.create_subscription topic_name, subscription_name2, {
       :dead_lettering_on_filter_evaluation_exceptions => true,
@@ -103,11 +103,11 @@ describe "ServiceBus Topics Scenario" do
       :max_delivery_count => 20,
       :requires_session => false
     }
-    s2.dead_lettering_on_filter_evaluation_exceptions.must_equal true
-    s2.dead_lettering_on_message_expiration.must_equal true
-    s2.enable_batched_operations.must_equal true
-    s2.max_delivery_count.must_equal 20
-    s2.requires_session.must_equal false
+    expect(s2.dead_lettering_on_filter_evaluation_exceptions).to eq(true)
+    expect(s2.dead_lettering_on_message_expiration).to eq(true)
+    expect(s2.enable_batched_operations).to eq(true)
+    expect(s2.max_delivery_count).to eq(20)
+    expect(s2.requires_session).to eq(false)
 
     subject.create_subscription topic_name, subscription_name3
     subject.create_subscription topic_name, subscription_name4
@@ -213,27 +213,27 @@ describe "ServiceBus Topics Scenario" do
 
   def get_message_counts()
     topic = subject.get_topic topic_name
-    topic.title.must_equal topic_name
+    expect(topic.title).to eq(topic_name)
 
     # Subscription 1
     subscription1 = subject.get_subscription topic_name, subscription_name1
     ScenarioHelper.out 'Subscription 1 message count: ' + subscription1.message_count.to_s
-    subscription1.message_count.must_equal 4
+    expect(subscription1.message_count).to eq(4)
 
     # Subscription 2
     subscription2 = subject.get_subscription topic_name, subscription_name2
     ScenarioHelper.out 'Subscription 2 message count ' + subscription2.message_count.to_s
-    subscription2.message_count.must_equal 2
+    expect(subscription2.message_count).to eq(2)
 
     # Subscription 3
     subscription3 = subject.get_subscription topic_name, subscription_name3
     ScenarioHelper.out 'Subscription 3 message count ' + subscription3.message_count.to_s
-    subscription3.message_count.must_equal 3
+    expect(subscription3.message_count).to eq(3)
 
     # Subscription 4
     subscription4 = subject.get_subscription topic_name, subscription_name4
     ScenarioHelper.out 'Subscription 4 message count ' + subscription4.message_count.to_s
-    subscription4.message_count.must_equal 8
+    expect(subscription4.message_count).to eq(8)
   end
 
   def get_message_from_sub(expected_messages, subscription_name, exp_custom_props = nil)
@@ -254,7 +254,7 @@ describe "ServiceBus Topics Scenario" do
 
     message_count = (subject.get_subscription topic_name, subscription_name).message_count
     ScenarioHelper.out 'Before getting any messages, Message count: ' + message_count.to_s
-    message_count.must_equal expected_count
+    expect(message_count).to eq(expected_count)
 
     # Peek the first message
     message1 = subject.peek_lock_subscription_message topic_name, subscription_name, { :timeout => 20 }
@@ -262,7 +262,7 @@ describe "ServiceBus Topics Scenario" do
 
     message_count = (subject.get_subscription topic_name, subscription_name).message_count
     ScenarioHelper.out 'Peek locked first message, Message count: ' + message_count.to_s
-    message_count.must_equal expected_count # Peek locked first message, count should not change
+    expect(message_count).to eq(expected_count) # Peek locked first message, count should not change
 
     # Get the second message
     message2 = subject.read_delete_subscription_message topic_name, subscription_name,  { :timeout => 5 }
@@ -271,14 +271,14 @@ describe "ServiceBus Topics Scenario" do
 
     message_count = (subject.get_subscription topic_name, subscription_name).message_count
     ScenarioHelper.out 'RECEIVE_AND_DELETE second message, Message count: ' + message_count.to_s
-    message_count.must_equal expected_count # RECEIVE_AND_DELETE second message, count decrements
+    expect(message_count).to eq(expected_count) # RECEIVE_AND_DELETE second message, count decrements
 
     # Unlock and get the first message
     subject.unlock_subscription_message message1
 
     message_count = (subject.get_subscription topic_name, subscription_name).message_count
     ScenarioHelper.out 'Unlocked first message, Message count: ' + message_count.to_s
-    message_count.must_equal expected_count # Unlocked first message, count stays the same
+    expect(message_count).to eq(expected_count) # Unlocked first message, count stays the same
 
     # Get the first unlocked message
     message1again = subject.read_delete_subscription_message topic_name, subscription_name
@@ -288,7 +288,7 @@ describe "ServiceBus Topics Scenario" do
 
     message_count = (subject.get_subscription topic_name, subscription_name).message_count
     ScenarioHelper.out 'got first message again, Message count: ' + message_count.to_s
-    message_count.must_equal expected_count # Got message one again (destructive), count should decrease
+    expect(message_count).to eq(expected_count) # Got message one again (destructive), count should decrease
 
     # Negative test, make sure unlocked messages cannot be deleted.
     begin
@@ -296,8 +296,8 @@ describe "ServiceBus Topics Scenario" do
       flunk 'Deleting a RECEIVEANDDELETE messasge should fail'
     rescue Azure::Core::Http::HTTPError => error
       ScenarioHelper.out 'As expected, could not delete a deleted message'
-      error.status_code.must_equal 400
-      error.type.must_equal 'Unknown'
+      expect(error.status_code).to eq(400)
+      expect(error.type).to eq('Unknown')
     end
 
     if expected_count > 0
@@ -307,7 +307,7 @@ describe "ServiceBus Topics Scenario" do
 
       message_count = (subject.get_subscription topic_name, subscription_name).message_count
       ScenarioHelper.out 'Got third message, Message count: ' + message_count.to_s
-      message_count.must_equal expected_count # Peeked third message, count should not change
+      expect(message_count).to eq(expected_count) # Peeked third message, count should not change
 
       # Delete it
       subject.delete_subscription_message message3
@@ -315,7 +315,7 @@ describe "ServiceBus Topics Scenario" do
 
       message_count = (subject.get_subscription topic_name, subscription_name).message_count
       ScenarioHelper.out 'Deleted third message, Message count: ' + message_count.to_s
-      message_count.must_equal expected_count # Deleted third message, count decrements
+      expect(message_count).to eq(expected_count) # Deleted third message, count decrements
     end
 
     if expected_count > 0
@@ -326,7 +326,7 @@ describe "ServiceBus Topics Scenario" do
 
       message_count = (subject.get_subscription topic_name, subscription_name).message_count
       ScenarioHelper.out 'Got fourth message, Message count: ' + message_count.to_s
-      message_count.must_equal expected_count # Got fourth message, count decrements
+      expect(message_count).to eq(expected_count) # Got fourth message, count decrements
     end
 
     # Get the rest of the messages
@@ -338,14 +338,14 @@ describe "ServiceBus Topics Scenario" do
 
       message_count = (subject.get_subscription topic_name, subscription_name).message_count
       ScenarioHelper.out 'Got message #' + message_id.to_s + ' message, Message count: ' + message_count.to_s
-      message_count.must_equal expected_count
+      expect(message_count).to eq(expected_count)
 
       message_id = message_id + 1
     end
 
     message_count = (subject.get_subscription topic_name, subscription_name).message_count
     ScenarioHelper.out 'Got all messages, Message count: ' + message_count.to_s
-    message_count.must_equal 0
+    expect(message_count).to eq(0)
   end
 
   it 'should be able to upload many messages to a topic and read them back from all subscriptions' do

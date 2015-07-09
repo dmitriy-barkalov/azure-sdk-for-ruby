@@ -48,22 +48,22 @@ describe Azure::Table::TableService do
       rescue
       end
 
-      assert does_not_exist
+      expect(does_not_exist).to be_truthy
 
       etag = subject.insert_or_replace_entity table_name, entity
-      etag.must_be_kind_of String
+      expect(etag).to be_a_kind_of(String)
 
       result = subject.get_entity table_name, entity["PartitionKey"], entity["RowKey"]
 
-      result.must_be_kind_of Azure::Table::Entity
-      result.table.must_equal table_name
-      result.etag.must_equal etag
+      expect(result).to be_a_kind_of(Azure::Table::Entity)
+      expect(result.table).to eq(table_name)
+      expect(result.etag).to eq(etag)
       
       entity.each { |k,v|
         unless entity[k].class == Time
-          result.properties[k].must_equal entity[k]
+          expect(result.properties[k]).to eq(entity[k])
         else
-          result.properties[k].to_i.must_equal entity[k].to_i
+          expect(result.properties[k].to_i).to eq(entity[k].to_i)
         end
       }
     end
@@ -84,7 +84,7 @@ describe Azure::Table::TableService do
       rescue
       end
 
-      assert exists, "cannot verify existing record"
+      expect(exists).to be_truthy "cannot verify existing record"
 
       etag = subject.insert_or_replace_entity table_name, { 
         "PartitionKey" => entity["PartitionKey"],
@@ -92,46 +92,43 @@ describe Azure::Table::TableService do
         "NewCustomProperty" => "NewCustomValue"
       }
 
-      etag.must_be_kind_of String
-      etag.wont_equal existing_etag
+      expect(etag).to be_a_kind_of(String)
+      expect(etag).not_to eq(existing_etag)
 
       result = subject.get_entity table_name, entity["PartitionKey"], entity["RowKey"]
       
-      result.must_be_kind_of Azure::Table::Entity
-      result.table.must_equal table_name
+      expect(result).to be_a_kind_of(Azure::Table::Entity)
+      expect(result.table).to eq(table_name)
 
       # removed all existing props
       entity.each { |k,v|
-        result.properties.wont_include k unless k == "PartitionKey" || k == "RowKey"
+        expect(result.properties).not_to include(k) unless k == "PartitionKey" || k == "RowKey"
       }
 
       # and has the new one
-      result.properties["NewCustomProperty"].must_equal "NewCustomValue"
+      expect(result.properties["NewCustomProperty"]).to eq("NewCustomValue")
     end
 
     it "errors on an invalid table name" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        entity = entity_properties.dup
+      expect { entity = entity_properties.dup
         entity["RowKey"] = "row_key"
         subject.insert_or_replace_entity "this_table.cannot-exist!", entity
-      end
+       }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an invalid partition key" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        entity = entity_properties.dup
+      expect { entity = entity_properties.dup
         entity["PartitionKey"] = "this/partition_key#is?invalid"
         entity["RowKey"] = "row_key"
         subject.insert_or_replace_entity table_name, entity
-      end
+       }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an invalid row key" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        entity = entity_properties.dup
+      expect { entity = entity_properties.dup
         entity["RowKey"] = "this/partition_key#is?invalid"
         subject.insert_or_replace_entity table_name, entity
-      end
+       }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

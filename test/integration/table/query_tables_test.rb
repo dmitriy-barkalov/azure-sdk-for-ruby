@@ -25,18 +25,18 @@ describe Azure::Table::TableService do
 
     it "gets a list of tables for the account" do
       result = subject.query_tables
-      result.must_be_kind_of Array
+      expect(result).to be_a_kind_of(Array)
 
       tables.each { |t| 
         table = result.find {|c|
           c[:properties]["TableName"] == t
         }
-        table.wont_be_nil
+        expect(table).not_to be_nil
         updated = subject.get_table(t)
-        updated.wont_be_nil
+        expect(updated).not_to be_nil
 
         # this is a weird, but sometimes it's off by a few seconds
-        assert ((table[:updated] - updated).abs < 30), "time stamps don't match"
+        expect(((table[:updated] - updated).abs < 30)).to be_truthy "time stamps don't match"
       }
     end
   end

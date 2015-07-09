@@ -28,23 +28,19 @@ describe Azure::Blob::BlobService do
 
     it 'sets and gets custom metadata for the container' do
       result = subject.set_container_metadata container_name, metadata
-      result.must_be_nil
+      expect(result).to be_nil
       container = subject.get_container_metadata container_name
-      container.wont_be_nil
-      container.name.must_equal container_name
+      expect(container).not_to be_nil
+      expect(container.name).to eq(container_name)
       metadata.each { |k,v|
-        container.metadata.must_include k.downcase
-        container.metadata[k.downcase].must_equal v
+        expect(container.metadata).to include(k.downcase)
+        expect(container.metadata[k.downcase]).to eq(v)
       }
     end
 
     it 'errors if the container does not exist' do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.get_container_metadata ContainerNameHelper.name
-      end
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.set_container_metadata ContainerNameHelper.name, metadata
-      end
+      expect { subject.get_container_metadata ContainerNameHelper.name }.to raise_error(Azure::Core::Http::HTTPError)
+      expect { subject.set_container_metadata ContainerNameHelper.name, metadata }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

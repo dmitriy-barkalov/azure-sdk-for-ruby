@@ -45,7 +45,7 @@ describe Azure::Table::TableService do
       rescue
       end
 
-      assert exists, "cannot verify existing record"
+      expect(exists).to be_truthy "cannot verify existing record"
     }
 
     after { TableNameHelper.clean }
@@ -57,21 +57,21 @@ describe Azure::Table::TableService do
         "NewCustomProperty" => "NewCustomValue"
       }
 
-      etag.must_be_kind_of String
-      etag.wont_equal @existing_etag
+      expect(etag).to be_a_kind_of(String)
+      expect(etag).not_to eq(@existing_etag)
 
       result = subject.get_entity table_name, entity_properties["PartitionKey"], entity_properties["RowKey"]
       
-      result.must_be_kind_of Azure::Table::Entity
-      result.table.must_equal table_name
+      expect(result).to be_a_kind_of(Azure::Table::Entity)
+      expect(result.table).to eq(table_name)
 
       # removed all existing props
       entity_properties.each { |k,v|
-        result.properties.wont_include k unless k == "PartitionKey" || k == "RowKey"
+        expect(result.properties).not_to include(k) unless k == "PartitionKey" || k == "RowKey"
       }
 
       # and has the new one
-      result.properties["NewCustomProperty"].must_equal "NewCustomValue"
+      expect(result.properties["NewCustomProperty"]).to eq("NewCustomValue")
     end
 
     it "updates an existing entity, removing any properties not included in the update operation and adding nil one" do 
@@ -81,51 +81,46 @@ describe Azure::Table::TableService do
         "NewCustomProperty" => nil
       }
 
-      etag.must_be_kind_of String
-      etag.wont_equal @existing_etag
+      expect(etag).to be_a_kind_of(String)
+      expect(etag).not_to eq(@existing_etag)
 
       result = subject.get_entity table_name, entity_properties["PartitionKey"], entity_properties["RowKey"]
       
-      result.must_be_kind_of Azure::Table::Entity
-      result.table.must_equal table_name
+      expect(result).to be_a_kind_of(Azure::Table::Entity)
+      expect(result.table).to eq(table_name)
 
       # removed all existing props
       entity_properties.each { |k,v|
-        result.properties.wont_include k unless k == "PartitionKey" || k == "RowKey"
+        expect(result.properties).not_to include(k) unless k == "PartitionKey" || k == "RowKey"
       }
 
       # and has the new one
-      result.properties["NewCustomProperty"].must_equal nil
+      expect(result.properties["NewCustomProperty"]).to eq(nil)
     end
 
     it "errors on a non-existing row key" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        entity = entity_properties.dup
+      expect { entity = entity_properties.dup
         entity["RowKey"] = "this-row-key-does-not-exist"
         subject.update_entity table_name, entity
-      end
+       }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an invalid table name" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.update_entity "this_table.cannot-exist!", entity_properties
-      end
+      expect { subject.update_entity "this_table.cannot-exist!", entity_properties }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an invalid partition key" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        entity = entity_properties.dup
+      expect { entity = entity_properties.dup
         entity["PartitionKey"] = "this/partition_key#is?invalid"
         subject.update_entity table_name, entity
-      end
+       }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an invalid row key" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        entity = entity_properties.dup
+      expect { entity = entity_properties.dup
         entity["RowKey"] = "this/row_key#is?invalid"
         subject.update_entity table_name, entity
-      end
+       }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

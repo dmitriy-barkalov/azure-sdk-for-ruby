@@ -35,17 +35,12 @@ describe Azure::SqlDatabaseManagementService do
     end
 
     it 'raise if the sql server does not exist' do
-      assert_raises(Azure::SqlDatabaseManagement::ServerDoesNotExist) do
-        subject.reset_password('unknown-server', 'User2@123')
-      end
+      expect { subject.reset_password('unknown-server', 'User2@123') }.to raise_error(Azure::SqlDatabaseManagement::ServerDoesNotExist)
     end
 
     it 'error if the sql server password is invalid' do
       password = 'weak'
-      exception = assert_raises(RuntimeError) do
-        subject.reset_password(sql_server.name, password)
-      end
-      assert_match(/Password validation failed/i, exception.message)
+      expect { subject.reset_password(sql_server.name, password) }.to raise_error(RuntimeError, /Password validation failed/i)
     end
 
   end

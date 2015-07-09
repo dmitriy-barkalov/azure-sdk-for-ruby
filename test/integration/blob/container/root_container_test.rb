@@ -34,22 +34,22 @@ describe Azure::Blob::BlobService do
   it 'creates the container with explicit name and some blobs' do
     begin
       container = subject.create_container container_name
-      container.name.must_equal container_name
+      expect(container.name).to eq(container_name)
 
       # explicit root container name
       blob = subject.create_page_blob container_name, blob_name1, length
-      blob.name.must_equal blob_name1
+      expect(blob.name).to eq(blob_name1)
 
       # nil container name
       blob = subject.create_page_blob nil, blob_name2, length
-      blob.name.must_equal blob_name2
+      expect(blob.name).to eq(blob_name2)
 
       # empty string container name
       blob = subject.create_page_blob '', blob_name3, length
-      blob.name.must_equal blob_name3
+      expect(blob.name).to eq(blob_name3)
     rescue Azure::Core::Http::HTTPError => error
       puts error.message
-      error.status_code.must_equal 409
+      expect(error.status_code).to eq(409)
     end
   end
 end

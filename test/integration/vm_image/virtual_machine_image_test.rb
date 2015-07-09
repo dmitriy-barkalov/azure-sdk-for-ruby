@@ -22,13 +22,13 @@ describe Azure::VirtualMachineImageManagementService do
 
     it "returns a list of virtual machine images" do
       virtualImages = subject.list_virtual_machine_images
-      virtualImages.wont_be_nil
-      virtualImages.must_be_kind_of Array
+      expect(virtualImages).not_to be_nil
+      expect(virtualImages).to be_a_kind_of(Array)
       image = virtualImages.first
-      image.must_be_kind_of Azure::VirtualMachineImageManagement::VirtualMachineImage
-      image.os_type.wont_be_nil
-      image.category.wont_be_nil
-      image.name.wont_be_nil
+      expect(image).to be_a_kind_of(Azure::VirtualMachineImageManagement::VirtualMachineImage)
+      expect(image.os_type).not_to be_nil
+      expect(image.category).not_to be_nil
+      expect(image.name).not_to be_nil
       refute_equal virtualImages.length, 0
     end
 

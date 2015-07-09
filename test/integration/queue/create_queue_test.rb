@@ -26,25 +26,23 @@ describe Azure::Queue::QueueService do
 
     it "creates a queue with a valid name" do
       result = subject.create_queue queue_name
-      result.must_be_nil
+      expect(result).to be_nil
     end
 
     it "creates a queue with a valid name and metadata" do
       result = subject.create_queue queue_name, { :metadata => metadata }
-      result.must_be_nil
+      expect(result).to be_nil
 
       message_count, queue_metadata = subject.get_queue_metadata queue_name
 
       metadata.each { |k,v|
-        queue_metadata.must_include k
-        queue_metadata[k].must_equal v
+        expect(queue_metadata).to include(k)
+        expect(queue_metadata[k]).to eq(v)
       }
     end
 
     it "errors on an invalid queue name" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.create_queue "this_queue.cannot-exist!"
-      end
+      expect { subject.create_queue "this_queue.cannot-exist!" }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

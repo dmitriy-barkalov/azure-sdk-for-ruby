@@ -21,12 +21,12 @@ describe Azure::BaseManagement::BaseManagementService do
 
     it "check role-sizes list present" do
       result = subject.list_role_sizes
-      result.wont_be_nil
+      expect(result).not_to be_nil
     end
 
     it "returns a list of role-sizes" do
       role_sizes = subject.list_role_sizes
-      role_sizes.must_be_kind_of Array
+      expect(role_sizes).to be_a_kind_of(Array)
       refute_equal role_sizes.length, 0
     end
 

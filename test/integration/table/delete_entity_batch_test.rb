@@ -43,12 +43,10 @@ describe Azure::Table::TableService do
       batch = Azure::Table::Batch.new table_name, entity_properties["PartitionKey"]
       batch.delete entity_properties["RowKey"]
       results = subject.execute_batch batch
-      results[0].must_be_nil
+      expect(results[0]).to be_nil
 
       # query entity to make sure it was deleted
-      assert_raises(Azure::Core::Http::HTTPError, "ResourceNotFound (404): The specified resource does not exist.") do
-        subject.get_entity table_name, entity_properties["PartitionKey"], entity_properties["RowKey"]
-      end
+      expect { subject.get_entity table_name, entity_properties["PartitionKey"], entity_properties["RowKey"] }.to raise_error(Azure::Core::Http::HTTPError, "ResourceNotFound (404): The specified resource does not exist.")
     end
 
     it "deletes complex keys" do
@@ -75,33 +73,30 @@ describe Azure::Table::TableService do
 
       results = subject.execute_batch batch
 
-      results[0].must_be_nil
-      results[1].must_be_nil
-      results[2].must_be_nil
+      expect(results[0]).to be_nil
+      expect(results[1]).to be_nil
+      expect(results[2]).to be_nil
     end
 
     it "errors on an invalid table name" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        batch = Azure::Table::Batch.new "this_table.cannot-exist!", entity_properties["PartitionKey"]
+      expect { batch = Azure::Table::Batch.new "this_table.cannot-exist!", entity_properties["PartitionKey"]
         batch.delete entity_properties["RowKey"]
         subject.execute_batch batch
-      end
+       }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an invalid partition key" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        batch = Azure::Table::Batch.new table_name, "this_partition/key#is_invalid"
+      expect { batch = Azure::Table::Batch.new table_name, "this_partition/key#is_invalid"
         batch.delete entity_properties["RowKey"]
         subject.execute_batch batch
-      end
+       }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an invalid row key" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        batch = Azure::Table::Batch.new table_name, entity_properties["PartitionKey"]
+      expect { batch = Azure::Table::Batch.new table_name, entity_properties["PartitionKey"]
         batch.delete "thisrow/key#is_invalid"
         subject.execute_batch batch
-      end
+       }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

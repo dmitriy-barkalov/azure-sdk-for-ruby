@@ -59,7 +59,7 @@ describe 'Queue GB-18030' do
         subject.set_queue_metadata queue_name, metadata
         flunk "No exception"
       rescue Azure::Core::Http::HTTPError => error
-        error.status_code.must_equal 400
+        expect(error.status_code).to eq(400)
       end
     }
   end
@@ -71,7 +71,7 @@ describe 'Queue GB-18030' do
         subject.set_queue_metadata queue_name, metadata
         flunk "No exception"
       rescue Azure::Core::Http::HTTPError => error
-        error.status_code.must_equal 400
+        expect(error.status_code).to eq(400)
       end
     }
   end
@@ -84,7 +84,7 @@ describe 'Queue GB-18030' do
         flunk "No exception"
       rescue Azure::Core::Http::HTTPError => error
         # TODO: Error should really be 400
-        error.status_code.must_equal 403
+        expect(error.status_code).to eq(403)
       end
     }
   end
@@ -97,7 +97,7 @@ describe 'Queue GB-18030' do
         flunk "No exception"
       rescue Azure::Core::Http::HTTPError => error
         # TODO: Error should really be 400
-        error.status_code.must_equal 403
+        expect(error.status_code).to eq(403)
       end
     }
   end
@@ -109,7 +109,7 @@ describe 'Queue GB-18030' do
       messages = subject.list_messages queue_name, 500
       message = messages.first
       returned_content = message.message_text
-      returned_content.must_equal content
+      expect(returned_content).to eq(content)
       subject.delete_message queue_name, message.id, message.pop_receipt
     }
   end
@@ -123,7 +123,7 @@ describe 'Queue GB-18030' do
       messages = subject.list_messages queue_name, 500
       message = messages.first
       returned_content = message.message_text
-      returned_content.encode("UTF-8").must_equal content.encode("UTF-8")
+      expect(returned_content.encode("UTF-8")).to eq(content.encode("UTF-8"))
       subject.delete_message queue_name, message.id, message.pop_receipt
     }
   end

@@ -58,25 +58,22 @@ describe Azure::VirtualNetworkManagement::VirtualNetwork do
           dns: [{ name: 'demodns', ip_address: '2.3.4.5' }]
       }
 
-      exception = assert_raises(RuntimeError) do
-        subject.set_network_configuration(in_vnet_name,
+      expect { subject.set_network_configuration(in_vnet_name,
                                           geo_location,
                                           in_address_space,
                                           options)
-      end
-      #assert_match(xml_err_msg, exception.message)
+       }.to raise_error(RuntimeError)
     end
   end
 
   describe 'Create virtual network with no address space provided options ' do
     it 'Create virtual network with invalid options' do
-      exception = assert_raises(RuntimeError) do
+      expect {
         subject.set_network_configuration(in_vnet_name,
                                           geo_location,
                                           invalid_address_space,
                                           inputoptions)
-      end
-      assert_match(xml_err_msg, exception.message)
+      }.to raise_error(RuntimeError, xml_err_msg)
     end
   end
 
@@ -103,14 +100,11 @@ describe Azure::VirtualNetworkManagement::VirtualNetwork do
 
   describe 'Create virtual network invalid cidr' do
     it 'Create virtual network with invalid options' do
-      exception = assert_raises(RuntimeError) do
-        subject.set_network_configuration(in_vnet_name,
-                                          geo_location,
-                                          invalid_cidr_address_space,
-                                          inputoptions)
-      end
-      assert_match("Cidr is invalid for IP #{invalid_cidr_address_space[0]}",
-                   exception.message)
+      expect { subject.set_network_configuration(in_vnet_name,
+                                                 geo_location,
+                                                 invalid_cidr_address_space,
+                                                 inputoptions)
+      }.to raise_error(RuntimeError, "Cidr is invalid for IP #{invalid_cidr_address_space[0]}")
     end
   end
 end

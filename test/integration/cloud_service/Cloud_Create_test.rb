@@ -37,9 +37,9 @@ describe Azure::CloudServiceManagementService do
 
     it 'Creates a new cloud service in Microsoft Azure.' do
       cloud_service = subject.get_cloud_service_properties(@cloud_name)
-      assert cloud_service.name, @cloud_name
-      assert cloud_service.location, options[:location]
-      assert cloud_service.virtual_machines, Hash.new
+      expect(cloud_service.name).to eq(@cloud_name)
+      expect(cloud_service.location).to eq(options[:location])
+      expect(cloud_service.virtual_machines).to eq(Hash.new)
     end
   end
 end

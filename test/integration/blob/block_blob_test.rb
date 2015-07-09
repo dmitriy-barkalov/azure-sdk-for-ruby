@@ -30,7 +30,7 @@ describe Azure::Blob::BlobService do
   describe '#create_block_blob' do
     it 'creates a page blob' do
       blob = subject.create_block_blob container_name, blob_name, content
-      blob.name.must_equal blob_name
+      expect(blob.name).to eq(blob_name)
     end
 
     it 'sets additional properties when the options hash is used' do
@@ -44,20 +44,18 @@ describe Azure::Blob::BlobService do
 
       blob = subject.create_block_blob container_name, blob_name, content, options
       blob = subject.get_blob_properties container_name, blob_name
-      blob.name.must_equal blob_name
-      blob.properties[:content_type].must_equal options[:content_type]
-      blob.properties[:content_encoding].must_equal options[:content_encoding]
-      blob.properties[:cache_control].must_equal options[:cache_control]
+      expect(blob.name).to eq(blob_name)
+      expect(blob.properties[:content_type]).to eq(options[:content_type])
+      expect(blob.properties[:content_encoding]).to eq(options[:content_encoding])
+      expect(blob.properties[:cache_control]).to eq(options[:cache_control])
 
       blob = subject.get_blob_metadata container_name, blob_name
-      blob.name.must_equal blob_name
-      blob.metadata["custommetadataproperty"].must_equal "CustomMetadataValue"
+      expect(blob.name).to eq(blob_name)
+      expect(blob.metadata["custommetadataproperty"]).to eq("CustomMetadataValue")
     end
 
     it 'errors if the container does not exist' do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.create_block_blob ContainerNameHelper.name, blob_name, content
-      end
+      expect { subject.create_block_blob ContainerNameHelper.name, blob_name, content }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 
@@ -70,9 +68,9 @@ describe Azure::Blob::BlobService do
       # verify
       block_list = subject.list_blob_blocks container_name, blob_name
       block = block_list[:uncommitted][0]
-      block.type.must_equal :uncommitted
-      block.size.must_equal 512
-      block.name.must_equal blockid
+      expect(block.type).to eq(:uncommitted)
+      expect(block.size).to eq(512)
+      expect(block.name).to eq(blockid)
     end
   end
 
@@ -90,22 +88,20 @@ describe Azure::Blob::BlobService do
 
       (0..1).each { |i|
         block = block_list[:uncommitted][i]
-        block.type.must_equal :uncommitted
-        block.size.must_equal 512
-        block.name.must_equal blocklist[i][0]
+        expect(block.type).to eq(:uncommitted)
+        expect(block.size).to eq(512)
+        expect(block.name).to eq(blocklist[i][0])
       }
 
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.get_blob container_name, blob_name
-      end
+      expect { subject.get_blob container_name, blob_name }.to raise_error(Azure::Core::Http::HTTPError)
 
       # commit blocks
       result = subject.commit_blob_blocks container_name, blob_name, blocklist
-      result.must_be_nil
+      expect(result).to be_nil
 
       blob, returned_content = subject.get_blob container_name, blob_name
-      blob.properties[:content_length].must_equal (content.length * 2)
-      returned_content.must_equal (content + content)
+      expect(blob.properties[:content_length]).to eq((content.length) * 2)
+      expect(returned_content).to eq((content) + content)
     end
   end
 
@@ -118,7 +114,7 @@ describe Azure::Blob::BlobService do
 
       # two committed blocks, two uncommitted blocks
       result = subject.commit_blob_blocks container_name, blob_name, blocklist.slice(0..1)
-      result.must_be_nil
+      expect(result).to be_nil
 
       subject.create_blob_block container_name, blob_name, blocklist[2][0], content
       subject.create_blob_block container_name, blob_name, blocklist[3][0], content
@@ -128,25 +124,25 @@ describe Azure::Blob::BlobService do
       result = subject.list_blob_blocks container_name, blob_name
 
       committed = result[:committed]
-      committed.length.must_equal 2
+      expect(committed.length).to eq(2)
 
       expected_blocks = blocklist.slice(0..1).each
 
       committed.each { |block|
-        block.name.must_equal expected_blocks.next[0]
-        block.type.must_equal :committed
-        block.size.must_equal 512
+        expect(block.name).to eq(expected_blocks.next[0])
+        expect(block.type).to eq(:committed)
+        expect(block.size).to eq(512)
       }
 
       uncommitted = result[:uncommitted]
-      uncommitted.length.must_equal 2
+      expect(uncommitted.length).to eq(2)
       
       expected_blocks = blocklist.slice(2..3).each
 
       uncommitted.each { |block|
-        block.name.must_equal expected_blocks.next[0]
-        block.type.must_equal :uncommitted
-        block.size.must_equal 512
+        expect(block.name).to eq(expected_blocks.next[0])
+        expect(block.type).to eq(:uncommitted)
+        expect(block.size).to eq(512)
       }
     end
 
@@ -155,17 +151,17 @@ describe Azure::Blob::BlobService do
         result = subject.list_blob_blocks container_name, blob_name, { :blocklist_type => :uncommitted }
 
         committed = result[:committed]
-        committed.length.must_equal 0
+        expect(committed.length).to eq(0)
    
         uncommitted = result[:uncommitted]
-        uncommitted.length.must_equal 2
+        expect(uncommitted.length).to eq(2)
         
         expected_blocks = blocklist.slice(2..3).each
 
         uncommitted.each { |block|
-          block.name.must_equal expected_blocks.next[0]
-          block.type.must_equal :uncommitted
-          block.size.must_equal 512
+          expect(block.name).to eq(expected_blocks.next[0])
+          expect(block.type).to eq(:uncommitted)
+          expect(block.size).to eq(512)
         }
       end
       
@@ -173,43 +169,43 @@ describe Azure::Blob::BlobService do
         result = subject.list_blob_blocks container_name, blob_name, { :blocklist_type => :committed }
 
         committed = result[:committed]
-        committed.length.must_equal 2
+        expect(committed.length).to eq(2)
         
         expected_blocks = blocklist.slice(0..1).each
 
         committed.each { |block|
-          block.name.must_equal expected_blocks.next[0]
-          block.type.must_equal :committed
-          block.size.must_equal 512
+          expect(block.name).to eq(expected_blocks.next[0])
+          expect(block.type).to eq(:committed)
+          expect(block.size).to eq(512)
         }
 
         uncommitted = result[:uncommitted]
-        uncommitted.length.must_equal 0
+        expect(uncommitted.length).to eq(0)
       end
 
       it 'lists committed and uncommitted blocks if :all is passed' do
         result = subject.list_blob_blocks container_name, blob_name, { :blocklist_type => :all }
 
         committed = result[:committed]
-        committed.length.must_equal 2
+        expect(committed.length).to eq(2)
 
         expected_blocks = blocklist.slice(0..1).each
 
         committed.each { |block|
-          block.name.must_equal expected_blocks.next[0]
-          block.type.must_equal :committed
-          block.size.must_equal 512
+          expect(block.name).to eq(expected_blocks.next[0])
+          expect(block.type).to eq(:committed)
+          expect(block.size).to eq(512)
         }
 
         uncommitted = result[:uncommitted]
-        uncommitted.length.must_equal 2
+        expect(uncommitted.length).to eq(2)
 
         expected_blocks = blocklist.slice(2..3).each
 
         uncommitted.each { |block|
-          block.name.must_equal expected_blocks.next[0]
-          block.type.must_equal :uncommitted
-          block.size.must_equal 512
+          expect(block.name).to eq(expected_blocks.next[0])
+          expect(block.type).to eq(:uncommitted)
+          expect(block.size).to eq(512)
         }
       end
     end
@@ -219,35 +215,35 @@ describe Azure::Blob::BlobService do
         snapshot = subject.create_blob_snapshot container_name, blob_name
 
         result = subject.commit_blob_blocks container_name, blob_name, blocklist
-        result.must_be_nil
+        expect(result).to be_nil
         result = subject.list_blob_blocks container_name, blob_name
 
         committed = result[:committed]
-        committed.length.must_equal 4
+        expect(committed.length).to eq(4)
         expected_blocks = blocklist.each
 
         committed.each { |block|
-          block.name.must_equal expected_blocks.next[0]
-          block.type.must_equal :committed
-          block.size.must_equal 512
+          expect(block.name).to eq(expected_blocks.next[0])
+          expect(block.type).to eq(:committed)
+          expect(block.size).to eq(512)
         }
 
         result = subject.list_blob_blocks container_name, blob_name, { :blocklist_type => :all, :snapshot => snapshot }
 
         committed = result[:committed]
-        committed.length.must_equal 2
+        expect(committed.length).to eq(2)
 
         expected_blocks = blocklist.slice(0..1).each
 
         committed.each { |block|
-          block.name.must_equal expected_blocks.next[0]
-          block.type.must_equal :committed
-          block.size.must_equal 512
+          expect(block.name).to eq(expected_blocks.next[0])
+          expect(block.type).to eq(:committed)
+          expect(block.size).to eq(512)
         }
 
         # uncommitted blobs aren't copied in a snapshot.
         uncommitted = result[:uncommitted]
-        uncommitted.length.must_equal 0
+        expect(uncommitted.length).to eq(0)
       end
     end
   end

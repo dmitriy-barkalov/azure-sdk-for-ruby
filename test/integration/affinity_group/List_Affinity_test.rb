@@ -32,10 +32,10 @@ describe Azure::BaseManagementService do
     it 'list affinity groups' do
       affinity_groups = subject.list_affinity_groups
       affinity_group = affinity_groups.first
-      affinity_groups.wont_be_nil
-      affinity_groups.must_be_kind_of Array
-      affinity_group.must_be_kind_of Azure::BaseManagement::AffinityGroup
-      assert_operator affinity_groups.size, :>=, 1
+      expect(affinity_groups).not_to be_nil
+      expect(affinity_groups).to be_a_kind_of(Array)
+      expect(affinity_group).to be_a_kind_of(Azure::BaseManagement::AffinityGroup)
+      expect(affinity_groups.size).to be >= 1
     end
   end
 end

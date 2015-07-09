@@ -36,29 +36,26 @@ describe Azure::BaseManagementService do
                                     label,
                                     options)
       affinity_group = subject.get_affinity_group(affinity_group_name)
-      affinity_group.must_be_kind_of Azure::BaseManagement::AffinityGroup
-      affinity_group.name.wont_be_nil
-      affinity_group.location.must_equal image_location
-      affinity_group.name.must_equal affinity_group_name
-      affinity_group.label.must_equal label
-      affinity_group.description.must_equal options[:description]
+      expect(affinity_group).to be_a_kind_of(Azure::BaseManagement::AffinityGroup)
+      expect(affinity_group.name).not_to be_nil
+      expect(affinity_group.location).to eq(image_location)
+      expect(affinity_group.name).to eq(affinity_group_name)
+      expect(affinity_group.label).to eq(label)
+      expect(affinity_group.description).to eq(options[:description])
     end
 
     it 'errors if the affinity group location is not valid' do
-      exception = assert_raises(RuntimeError) do
-        subject.create_affinity_group(affinity_group_name, 'North West', label)
-      end
-      assert_match(/Allowed values are /i, exception.message)
+      expect { subject.create_affinity_group(affinity_group_name, 'North West', label) }.to raise_error(RuntimeError, /Allowed values are /i)
     end
 
     it 'create new affinity group without optional params' do
       subject.create_affinity_group(affinity_group_name, image_location, label)
       affinity_group = subject.get_affinity_group(affinity_group_name)
-      affinity_group.must_be_kind_of Azure::BaseManagement::AffinityGroup
-      affinity_group.name.wont_be_nil
-      affinity_group.location.must_equal image_location
-      affinity_group.name.must_equal affinity_group_name
-      affinity_group.label.must_equal label
+      expect(affinity_group).to be_a_kind_of(Azure::BaseManagement::AffinityGroup)
+      expect(affinity_group.name).not_to be_nil
+      expect(affinity_group.location).to eq(image_location)
+      expect(affinity_group.name).to eq(affinity_group_name)
+      expect(affinity_group.label).to eq(label)
     end
   end
 end

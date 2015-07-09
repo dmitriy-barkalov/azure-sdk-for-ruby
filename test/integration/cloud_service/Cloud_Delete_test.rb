@@ -39,7 +39,7 @@ describe Azure::CloudServiceManagementService do
     it 'Deletes the cloud service in Microsoft Azure.' do
       subject.delete_cloud_service(@cloud_name)
       cloud_service = subject.get_cloud_service(@cloud_name)
-      cloud_service.must_equal nil
+      expect(cloud_service).to eq(nil)
     end
   end
 end

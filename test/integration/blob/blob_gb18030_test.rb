@@ -66,7 +66,7 @@ describe 'Blob GB-18030' do
         subject.create_block_blob container_name, test_name, 'hi'
         blobs = subject.list_blobs container_name
         blobs.each { |value|
-          value.name.must_equal test_name
+          expect(value.name).to eq(test_name)
         }
         subject.delete_blob container_name, test_name
       end
@@ -84,7 +84,7 @@ describe 'Blob GB-18030' do
         subject.create_block_blob container_name, test_name, 'hi'
         blobs = subject.list_blobs container_name
         blobs.each { |value|
-          value.name.encode('UTF-8').must_equal test_name.encode('UTF-8')
+          expect(value.name.encode('UTF-8')).to eq(test_name.encode('UTF-8'))
         }
         subject.delete_blob container_name, test_name
       end
@@ -98,7 +98,7 @@ describe 'Blob GB-18030' do
         subject.set_blob_metadata container_name, blob_name, metadata
         flunk 'No exception'
       rescue Azure::Core::Http::HTTPError => error
-        error.status_code.must_equal 400
+        expect(error.status_code).to eq(400)
       end
     }
   end
@@ -110,7 +110,7 @@ describe 'Blob GB-18030' do
         subject.set_blob_metadata container_name, blob_name, metadata
         flunk 'No exception'
       rescue Azure::Core::Http::HTTPError => error
-        error.status_code.must_equal 400
+        expect(error.status_code).to eq(400)
       end
     }
   end
@@ -123,7 +123,7 @@ describe 'Blob GB-18030' do
         flunk 'No exception'
       rescue Azure::Core::Http::HTTPError => error
         # TODO: Error should really be 400
-        error.status_code.must_equal 403
+        expect(error.status_code).to eq(403)
       end
     }
   end
@@ -136,7 +136,7 @@ describe 'Blob GB-18030' do
         flunk 'No exception'
       rescue Azure::Core::Http::HTTPError => error
         # TODO: Error should really be 400
-        error.status_code.must_equal 403
+        expect(error.status_code).to eq(403)
       end
     }
   end
@@ -149,7 +149,7 @@ describe 'Blob GB-18030' do
       subject.create_block_blob container_name, blob_name, content
       blob, returned_content = subject.get_blob container_name, blob_name
 
-      returned_content.must_equal content
+      expect(returned_content).to eq(content)
     }
   end
 
@@ -161,7 +161,7 @@ describe 'Blob GB-18030' do
       subject.create_block_blob container_name, blob_name, content, options
       blob, returned_content = subject.get_blob container_name, blob_name
       returned_content.force_encoding(blob.properties[:content_encoding])
-      returned_content.must_equal content
+      expect(returned_content).to eq(content)
     }
   end
 
@@ -177,7 +177,7 @@ describe 'Blob GB-18030' do
       subject.create_blob_pages container_name, blob_name, 0, 511, content
       blob, returned_content = subject.get_blob container_name, blob_name
       returned_content.force_encoding(blob.properties[:content_encoding])
-      returned_content.must_equal content
+      expect(returned_content).to eq(content)
     }
   end
 
@@ -193,7 +193,7 @@ describe 'Blob GB-18030' do
       subject.create_blob_pages container_name, blob_name, 0, 511, content
       blob, returned_content = subject.get_blob container_name, blob_name
       returned_content.force_encoding(blob.properties[:content_encoding])
-      returned_content.must_equal content
+      expect(returned_content).to eq(content)
     }
   end
 end

@@ -37,12 +37,10 @@ describe Azure::VirtualNetworkManagement::VirtualNetwork do
   describe '#list_virtual_networks' do
     it 'Gets a list of virtual networks for the current subscription.' do
       virtual_networks = subject.list_virtual_networks
-      virtual_networks.wont_be_nil
-      virtual_networks.must_be_kind_of Array
-      virtual_networks.first.must_be_kind_of(
-          Azure::VirtualNetworkManagement::VirtualNetwork
-      )
-      assert_operator virtual_networks.size, :>=, 1
+      expect(virtual_networks).not_to be_nil
+      expect(virtual_networks).to be_a_kind_of(Array)
+      expect(virtual_networks.first).to be_a_kind_of(Azure::VirtualNetworkManagement::VirtualNetwork)
+      expect(virtual_networks.size).to be >= 1
     end
   end
 end

@@ -28,21 +28,19 @@ describe Azure::Blob::BlobService do
       properties = container.properties
       
       container = subject.get_container_properties container_name
-      container.wont_be_nil
-      container.name.must_equal container_name
-      container.properties[:etag].must_equal properties[:etag]
-      container.properties[:last_modified].must_equal properties[:last_modified]
+      expect(container).not_to be_nil
+      expect(container.name).to eq(container_name)
+      expect(container.properties[:etag]).to eq(properties[:etag])
+      expect(container.properties[:last_modified]).to eq(properties[:last_modified])
 
       metadata.each { |k,v|
-        container.metadata.must_include k.downcase
-        container.metadata[k.downcase].must_equal v
+        expect(container.metadata).to include(k.downcase)
+        expect(container.metadata[k.downcase]).to eq(v)
       }
     end
 
     it 'errors if the container does not exist' do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.get_container_properties ContainerNameHelper.name
-      end
+      expect { subject.get_container_properties ContainerNameHelper.name }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

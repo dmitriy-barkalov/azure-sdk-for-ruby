@@ -30,11 +30,11 @@ describe Azure::Blob::BlobService do
       subject.create_page_blob container_name, blob_name, length
 
       lease_id = subject.acquire_lease container_name, blob_name
-      lease_id.wont_be_nil
+      expect(lease_id).not_to be_nil
 
       broken_lease = subject.break_lease container_name, blob_name
       # lease should be possible to break immediately
-      broken_lease.must_equal 0
+      expect(broken_lease).to eq(0)
     end
   end
 end

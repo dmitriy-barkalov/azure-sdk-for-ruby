@@ -33,16 +33,16 @@ describe Azure::Blob::BlobService do
 
   	it 'retrieves the blob properties, metadata, and contents' do
       blob, returned_content = subject.get_blob container_name, blob_name
-      returned_content.must_equal content
-      blob.metadata.must_include "custommetadataproperty"
-      blob.metadata["custommetadataproperty"].must_equal "CustomMetadataValue"
-      blob.properties[:content_type].must_equal "application/foo"
+      expect(returned_content).to eq(content)
+      expect(blob.metadata).to include("custommetadataproperty")
+      expect(blob.metadata["custommetadataproperty"]).to eq("CustomMetadataValue")
+      expect(blob.properties[:content_type]).to eq("application/foo")
     end
 
   	it 'retrieves a range of data from the blob' do
       blob, returned_content = subject.get_blob container_name, blob_name, { :start_range => 0, :end_range => 511 }
-      returned_content.length.must_equal 512
-      returned_content.must_equal content[0..511]
+      expect(returned_content.length).to eq(512)
+      expect(returned_content).to eq(content[0..511])
   	end
 
   	it 'retrieves a snapshot of data from the blob' do
@@ -53,13 +53,13 @@ describe Azure::Blob::BlobService do
       subject.create_block_blob container_name, blob_name, content2, options
 
       blob, returned_content = subject.get_blob container_name, blob_name, { :start_range => 0, :end_range => 511 }
-      returned_content.length.must_equal 512
-      returned_content.must_equal content2[0..511]
+      expect(returned_content.length).to eq(512)
+      expect(returned_content).to eq(content2[0..511])
 
       blob, returned_content = subject.get_blob container_name, blob_name, { :start_range => 0, :end_range => 511, :snapshot => snapshot }
 
-      returned_content.length.must_equal 512
-      returned_content.must_equal content[0..511]
+      expect(returned_content.length).to eq(512)
+      expect(returned_content).to eq(content[0..511])
   	end
   end
 end

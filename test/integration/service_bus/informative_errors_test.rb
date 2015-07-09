@@ -29,9 +29,9 @@ describe "ServiceBus errors" do
       subject.create_topic topic
       flunk "No exception"
     rescue Azure::Core::Http::HTTPError => error
-      error.status_code.must_equal 409
-      error.type.must_equal "409"
-      error.detail.wont_be_nil
+      expect(error.status_code).to eq(409)
+      expect(error.type).to eq("409")
+      expect(error.detail).not_to be_nil
     end
   end
 end

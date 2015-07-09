@@ -55,28 +55,26 @@ class ScenarioHelper
   def self.compare_messages(expected,
                             actual,
                             custom_properties = nil)
-    actual.body.must_equal                       expected.body
-    actual.content_type.must_equal               expected.content_type
-    actual.correlation_id.must_equal             expected.correlation_id
-    actual.label.must_equal                      expected.label
-    actual.message_id.must_equal                 expected.message_id
-    actual.reply_to.must_equal                   expected.reply_to
-    actual.reply_to_session_id.must_equal        expected.reply_to_session_id
-    actual.scheduled_enqueue_time_utc.must_equal(
+    expect(actual.body).to eq(expected.body)
+    expect(actual.content_type).to eq(expected.content_type)
+    expect(actual.correlation_id).to eq(expected.correlation_id)
+    expect(actual.label).to eq(expected.label)
+    expect(actual.message_id).to eq(expected.message_id)
+    expect(actual.reply_to).to eq(expected.reply_to)
+    expect(actual.reply_to_session_id).to eq(expected.reply_to_session_id)
+    expect(actual.scheduled_enqueue_time_utc).to eq(
       expected.scheduled_enqueue_time_utc
     )
-    actual.session_id.must_equal                 expected.session_id
-    actual.to.must_equal                         expected.to
+    expect(actual.session_id).to eq(expected.session_id)
+    expect(actual.to).to eq(expected.to)
 
     # Note: The following properties are controlled by the server,
     # so we cannot verify as much
-    actual.delivery_count.must_be_kind_of Integer
-    actual.sequence_number.must_be_kind_of Integer
-    actual.enqueued_time_utc.must_be_kind_of Time
-    actual.lock_token.must_be_kind_of String unless actual.lock_token.nil?
-
-    actual.locked_until_utc.must_be_kind_of Time\
-      unless actual.locked_until_utc.nil?
+    expect(actual.delivery_count).to be_a_kind_of(Integer)
+    expect(actual.sequence_number).to be_a_kind_of(Integer)
+    expect(actual.enqueued_time_utc).to be_a_kind_of(Time)
+    expect(actual.lock_token).to be_a_kind_of(String) unless actual.lock_token.nil?
+    expect(actual.locked_until_utc).to be_a_kind_of(Time) unless actual.locked_until_utc.nil?
 
     if custom_properties.nil?
       expected_properties = expected.properties
@@ -91,9 +89,9 @@ class ScenarioHelper
       ScenarioHelper.out("#{k_d}:#{k_d.nil? ? '<nil>' : k_d.to_s}")
       if value != 'GUID'
         if !value.nil? && value.class == Time
-          value.httpdate.must_equal k_d
+          expect(value.httpdate).to eq(k_d)
         else
-          value.must_equal(k_d)
+          expect(value).to eq(k_d)
         end
       end
     end

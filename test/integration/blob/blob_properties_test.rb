@@ -36,11 +36,11 @@ describe Azure::Blob::BlobService do
 
     it 'sets and gets properties for a blob' do
       result = subject.set_blob_properties container_name, blob_name, options
-      result.must_be_nil
+      expect(result).to be_nil
       blob = subject.get_blob_properties container_name, blob_name
-      blob.properties[:content_type].must_equal options[:blob_content_type]
-      blob.properties[:content_encoding].must_equal options[:blob_content_encoding]
-      blob.properties[:cache_control].must_equal options[:blob_cache_control]
+      expect(blob.properties[:content_type]).to eq(options[:blob_content_type])
+      expect(blob.properties[:content_encoding]).to eq(options[:blob_content_encoding])
+      expect(blob.properties[:cache_control]).to eq(options[:blob_cache_control])
     end
 
     describe 'when a blob has a snapshot' do
@@ -52,26 +52,20 @@ describe Azure::Blob::BlobService do
         snapshot = subject.create_blob_snapshot container_name, blob_name
         blob = subject.get_blob_properties container_name, blob_name, { :snapshot => snapshot }
 
-        blob.snapshot.must_equal snapshot
-        blob.properties[:content_type].must_equal options[:blob_content_type]
-        blob.properties[:content_encoding].must_equal options[:blob_content_encoding]
-        blob.properties[:cache_control].must_equal options[:blob_cache_control]
+        expect(blob.snapshot).to eq(snapshot)
+        expect(blob.properties[:content_type]).to eq(options[:blob_content_type])
+        expect(blob.properties[:content_encoding]).to eq(options[:blob_content_encoding])
+        expect(blob.properties[:cache_control]).to eq(options[:blob_cache_control])
       end
 
       it 'errors if the snapshot does not exist' do
-        assert_raises(Azure::Core::Http::HTTPError) do
-          subject.get_blob_properties container_name, blob_name, { :snapshot => "invalidsnapshot" }
-        end
+        expect { subject.get_blob_properties container_name, blob_name, { :snapshot => "invalidsnapshot" } }.to raise_error(Azure::Core::Http::HTTPError)
       end
     end
     
     it 'errors if the blob name does not exist' do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.get_blob_properties container_name, "thisblobdoesnotexist"
-      end
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.get_blob_properties container_name, "thisblobdoesnotexist", options
-      end
+      expect { subject.get_blob_properties container_name, "thisblobdoesnotexist" }.to raise_error(Azure::Core::Http::HTTPError)
+      expect { subject.get_blob_properties container_name, "thisblobdoesnotexist", options }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

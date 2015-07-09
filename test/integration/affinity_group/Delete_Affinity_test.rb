@@ -33,7 +33,7 @@ describe Azure::BaseManagementService do
       affinity_list = subject.list_affinity_groups.select do |x|
         x.name == affinity_group_name
       end.first
-      affinity_list.must_be_nil
+      expect(affinity_list).to be_nil
     end
 
     it 'errors if the affinity group does not exist' do
@@ -41,8 +41,8 @@ describe Azure::BaseManagementService do
       begin
         subject.delete_affinity_group(affinity_group_name)
       rescue Azure::Error::Error => error
-        error.status_code.must_equal 404
-        error.type.must_equal 'AffinityGroupNotFound'
+        expect(error.status_code).to eq(404)
+        expect(error.type).to eq('AffinityGroupNotFound')
       end
     end
 

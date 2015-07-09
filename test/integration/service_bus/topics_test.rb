@@ -31,23 +31,23 @@ describe 'ServiceBus Topics' do
 
   it 'should be able to create a new topic' do
     result = subject.create_topic topic, { :max_size_in_megabytes => 2048 }
-    result.must_be :kind_of?, Azure::ServiceBus::Topic
-    result.name.must_equal topic
-    result.max_size_in_megabytes.must_equal 2048
+    expect(result).to be_a_kind_of(Azure::ServiceBus::Topic)
+    expect(result.name).to eq(topic)
+    expect(result.max_size_in_megabytes).to eq(2048)
   end
 
   it 'should be able to create a new topic from a string and description Hash' do
     result = subject.create_topic topic_alternative, description_alternative
-    result.must_be :kind_of?, Azure::ServiceBus::Topic
-    result.name.must_equal topic_alternative
+    expect(result).to be_a_kind_of(Azure::ServiceBus::Topic)
+    expect(result.name).to eq(topic_alternative)
 
-    result.default_message_time_to_live.must_equal 1800.0
-    #result.maximum_number_of_subscriptions.must_equal description_alternative[:maximum_number_of_subscriptions]
-    result.max_size_in_megabytes.must_equal description_alternative[:max_size_in_megabytes]
-    result.requires_duplicate_detection.must_equal description_alternative[:requires_duplicate_detection]
-    result.dead_lettering_on_filter_evaluation_exceptions.must_equal description_alternative[:dead_lettering_on_filter_evaluation_exceptions]
-    result.duplicate_detection_history_time_window.must_equal 1200.0
-    result.enable_batched_operations.must_equal description_alternative[:enable_batched_operations]
+    expect(result.default_message_time_to_live).to eq(1800.0)
+    #expect(result.maximum_number_of_subscriptions).to eq(description_alternative[:maximum_number_of_subscriptions])
+    expect(result.max_size_in_megabytes).to eq(description_alternative[:max_size_in_megabytes])
+    expect(result.requires_duplicate_detection).to eq(description_alternative[:requires_duplicate_detection])
+    expect(result.dead_lettering_on_filter_evaluation_exceptions).to eq(description_alternative[:dead_lettering_on_filter_evaluation_exceptions])
+    expect(result.duplicate_detection_history_time_window).to eq(1200.0)
+    expect(result.enable_batched_operations).to eq(description_alternative[:enable_batched_operations])
   end
 
   describe 'when a topic exists' do
@@ -59,8 +59,8 @@ describe 'ServiceBus Topics' do
 
     it 'should be able to get the topic' do
       result = subject.get_topic topic
-      result.must_be :kind_of?, Azure::ServiceBus::Topic
-      result.name.must_equal topic
+      expect(result).to be_a_kind_of(Azure::ServiceBus::Topic)
+      expect(result.name).to eq(topic)
     end
 
     it 'should be able to list topics' do
@@ -69,7 +69,7 @@ describe 'ServiceBus Topics' do
       result.each { |t|
         topic_found = true if t.name == topic
       }
-      assert topic_found, "list_topics didn't include the expected topic"
+      expect(topic_found).to be_truthy "list_topics didn't include the expected topic"
     end
 
     it 'should be able to send the topic a message' do
@@ -78,7 +78,7 @@ describe 'ServiceBus Topics' do
         m.label = 'my_label'
       end
       result = subject.send_topic_message topic, message
-      result.must_be_nil
+      expect(result).to be_nil
     end
 
     describe 'when there are multiple topics' do
@@ -100,29 +100,29 @@ describe 'ServiceBus Topics' do
           topic1_found = true if t.name == topic1
           topic2_found = true if t.name == topic2
         }
-        assert (topic_found and topic1_found and topic2_found), "list_topics didn't include the expected topic"
+        expect((topic_found and topic1_found and topic2_found)).to be_truthy "list_topics didn't include the expected topic"
       end
 
       it 'should be able to use $skip token with list_topics' do
         result = subject.list_topics
         result2 = subject.list_topics({ :skip => 1 })
-        result2.length.must_equal result.length - 1
-        result2[0].id.must_equal result[1].id
+        expect(result2.length).to eq(result.length - 1)
+        expect(result2[0].id).to eq(result[1].id)
       end
       
       it 'should be able to use $top token with list_topics' do
         result = subject.list_topics
-        result.length.wont_equal 1
+        expect(result.length).not_to eq(1)
 
         result2 = subject.list_topics({ :top => 1 })
-        result2.length.must_equal 1
+        expect(result2.length).to eq(1)
       end
 
       it 'should be able to use $skip and $top token together with list_topics' do
         result = subject.list_topics
         result2 = subject.list_topics({ :skip => 1, :top => 1 })
-        result2.length.must_equal 1
-        result2[0].id.must_equal result[1].id
+        expect(result2.length).to eq(1)
+        expect(result2[0].id).to eq(result[1].id)
       end
     end
   end

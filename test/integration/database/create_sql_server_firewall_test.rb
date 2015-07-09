@@ -36,45 +36,43 @@ describe Azure::SqlDatabaseManagementService do
     it "should adds a new server-level firewall rule for a SQL Database server with requester's IP address." do
       subject.set_sql_server_firewall_rule(sql_server.name, 'rule1', start_ip_address, end_ip_address)
       sql_server_firewalls = subject.list_sql_server_firewall_rules(sql_server.name)
-      sql_server_firewalls.must_be_kind_of Array
-      sql_server_firewalls.first.must_be_kind_of Azure::SqlDatabaseManagement::FirewallRule
-      sql_server_firewalls.size.must_equal 1
+      expect(sql_server_firewalls).to be_a_kind_of(Array)
+      expect(sql_server_firewalls.first).to be_a_kind_of(Azure::SqlDatabaseManagement::FirewallRule)
+      expect(sql_server_firewalls.size).to eq(1)
       firewall = sql_server_firewalls.first
-      firewall.name.must_equal 'rule1'
-      firewall.end_ip_address.wont_be_nil
-      firewall.start_ip_address.wont_be_nil
+      expect(firewall.name).to eq('rule1')
+      expect(firewall.end_ip_address).not_to be_nil
+      expect(firewall.start_ip_address).not_to be_nil
     end
 
     it 'should adds a new server-level firewall rule for a SQL Database server with given IP range.' do
       subject.set_sql_server_firewall_rule(sql_server.name, 'rule2', '10.20.30.0', '10.20.30.255')
       sql_server_firewalls = subject.list_sql_server_firewall_rules(sql_server.name)
-      sql_server_firewalls.must_be_kind_of Array
-      sql_server_firewalls.first.must_be_kind_of Azure::SqlDatabaseManagement::FirewallRule
-      sql_server_firewalls.size.must_equal 1
+      expect(sql_server_firewalls).to be_a_kind_of(Array)
+      expect(sql_server_firewalls.first).to be_a_kind_of(Azure::SqlDatabaseManagement::FirewallRule)
+      expect(sql_server_firewalls.size).to eq(1)
 
       firewall = sql_server_firewalls.last
-      firewall.name.must_equal 'rule2'
-      firewall.end_ip_address.must_equal '10.20.30.255'
-      firewall.start_ip_address.must_equal '10.20.30.0'
+      expect(firewall.name).to eq('rule2')
+      expect(firewall.end_ip_address).to eq('10.20.30.255')
+      expect(firewall.start_ip_address).to eq('10.20.30.0')
     end
 
     it 'should updates an existing server-level firewall rule for a SQL Database server.' do
       subject.set_sql_server_firewall_rule(sql_server.name, 'rule2', '10.20.30.100', '10.20.30.150')
       sql_server_firewalls = subject.list_sql_server_firewall_rules(sql_server.name)
-      sql_server_firewalls.must_be_kind_of Array
-      sql_server_firewalls.first.must_be_kind_of Azure::SqlDatabaseManagement::FirewallRule
-      sql_server_firewalls.size.must_equal 1
+      expect(sql_server_firewalls).to be_a_kind_of(Array)
+      expect(sql_server_firewalls.first).to be_a_kind_of(Azure::SqlDatabaseManagement::FirewallRule)
+      expect(sql_server_firewalls.size).to eq(1)
 
       firewall = sql_server_firewalls.last
-      firewall.name.must_equal 'rule2'
-      firewall.end_ip_address.must_equal '10.20.30.150'
-      firewall.start_ip_address.must_equal '10.20.30.100'
+      expect(firewall.name).to eq('rule2')
+      expect(firewall.end_ip_address).to eq('10.20.30.150')
+      expect(firewall.start_ip_address).to eq('10.20.30.100')
     end
 
     it 'errors if the sql server does not exist' do
-      assert_raises(Azure::SqlDatabaseManagement::ServerDoesNotExist) do
-        subject.set_sql_server_firewall_rule('unknown-server', 'rule1')
-      end
+      expect { subject.set_sql_server_firewall_rule('unknown-server', 'rule1') }.to raise_error(Azure::SqlDatabaseManagement::ServerDoesNotExist)
     end
   end
 

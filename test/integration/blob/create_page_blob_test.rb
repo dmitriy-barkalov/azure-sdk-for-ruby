@@ -30,12 +30,12 @@ describe Azure::Blob::BlobService do
 
     it 'creates a page blob' do
       blob = subject.create_page_blob container_name, blob_name, length
-      blob.name.must_equal blob_name
+      expect(blob.name).to eq(blob_name)
     end
 
     it 'creates a page blob with complex name' do
       blob = subject.create_page_blob container_name, complex_blob_name, length
-      blob.name.must_equal complex_blob_name
+      expect(blob.name).to eq(complex_blob_name)
 
       complex_blob_name.force_encoding("UTF-8")
       found_complex_name = false
@@ -44,7 +44,7 @@ describe Azure::Blob::BlobService do
         found_complex_name = true if blob.name == complex_blob_name
       }
 
-      found_complex_name.must_equal true
+      expect(found_complex_name).to eq(true)
     end
 
     it 'sets additional properties when the options hash is used' do
@@ -58,26 +58,22 @@ describe Azure::Blob::BlobService do
 
       blob = subject.create_page_blob container_name, blob_name, length, options
       blob = subject.get_blob_properties container_name, blob_name
-      blob.name.must_equal blob_name
-      blob.properties[:content_type].must_equal options[:content_type]
-      blob.properties[:content_encoding].must_equal options[:content_encoding]
-      blob.properties[:cache_control].must_equal options[:cache_control]
+      expect(blob.name).to eq(blob_name)
+      expect(blob.properties[:content_type]).to eq(options[:content_type])
+      expect(blob.properties[:content_encoding]).to eq(options[:content_encoding])
+      expect(blob.properties[:cache_control]).to eq(options[:cache_control])
 
       blob = subject.get_blob_metadata container_name, blob_name
-      blob.name.must_equal blob_name
-      blob.metadata["custommetadataproperty"].must_equal "CustomMetadataValue"
+      expect(blob.name).to eq(blob_name)
+      expect(blob.metadata["custommetadataproperty"]).to eq("CustomMetadataValue")
     end
 
     it 'errors if the container does not exist' do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.create_page_blob ContainerNameHelper.name, blob_name, length
-      end
+      expect { subject.create_page_blob ContainerNameHelper.name, blob_name, length }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it 'errors if the length is not 512 byte aligned' do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.create_page_blob container_name, blob_name, length + 1
-      end
+      expect { subject.create_page_blob container_name, blob_name, length + 1 }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

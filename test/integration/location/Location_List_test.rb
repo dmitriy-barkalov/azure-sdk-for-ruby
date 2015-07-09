@@ -21,17 +21,17 @@ describe Azure::BaseManagement::BaseManagementService do
 
     it "check locations list present" do
       result = subject.list_locations
-      result.wont_be_nil
+      expect(result).not_to be_nil
     end
 
     it "returns a list of locations" do
       locations = subject.list_locations
-      locations.must_be_kind_of Array
+      expect(locations).to be_a_kind_of(Array)
       location = locations.first
-      location.must_be_kind_of Azure::BaseManagement::Location
+      expect(location).to be_a_kind_of(Azure::BaseManagement::Location)
       refute_equal locations.length, 0
-      location.name.wont_be_nil
-      location.available_services.wont_be_nil
+      expect(location.name).not_to be_nil
+      expect(location.available_services).not_to be_nil
     end
 
   end #locations

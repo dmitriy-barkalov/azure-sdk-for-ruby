@@ -26,13 +26,13 @@ describe Azure::Queue::QueueService do
 
     it "creates a message in the specified queue and returns nil on success" do
       result = subject.create_message(queue_name, message_text)
-      result.must_be_nil
+      expect(result).to be_nil
       
       result = subject.peek_messages queue_name
-      result.wont_be_nil
-      result.wont_be_empty
-      result.length.must_equal 1
-      result[0].message_text.must_equal message_text
+      expect(result).not_to be_nil
+      expect(result).not_to be_empty
+      expect(result.length).to eq(1)
+      expect(result[0].message_text).to eq(message_text)
     end
 
     describe "when the options hash is used" do
@@ -41,35 +41,33 @@ describe Azure::Queue::QueueService do
 
       it "the :visibility_timeout option causes the message to be invisible for a period of time" do
         result = subject.create_message(queue_name, message_text, { :visibility_timeout=> visibility_timeout })
-        result.must_be_nil
+        expect(result).to be_nil
         
         result = subject.peek_messages queue_name
-        result.length.must_equal 0
+        expect(result.length).to eq(0)
         sleep(visibility_timeout)
 
         result = subject.peek_messages queue_name
-        result.length.must_equal 1
-        result.wont_be_empty
-        result[0].message_text.must_equal message_text
+        expect(result.length).to eq(1)
+        expect(result).not_to be_empty
+        expect(result[0].message_text).to eq(message_text)
       end
 
       it "the :message_ttl option modifies the expiration_date of the message" do
         result = subject.create_message(queue_name, message_text, { :message_ttl=> message_ttl })
-        result.must_be_nil
+        expect(result).to be_nil
         
         result = subject.peek_messages queue_name
-        result.wont_be_nil
-        result.wont_be_empty
+        expect(result).not_to be_nil
+        expect(result).not_to be_empty
         message = result[0]
-        message.message_text.must_equal message_text
-        Time.parse(message.expiration_time).to_i.must_equal Time.parse(message.insertion_time).to_i + message_ttl
+        expect(message.message_text).to eq(message_text)
+        expect(Time.parse(message.expiration_time).to_i).to eq(Time.parse(message.insertion_time).to_i + message_ttl)
       end
     end
     
     it "errors on an non-existent queue" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.create_message QueueNameHelper.name, message_text
-      end
+      expect { subject.create_message QueueNameHelper.name, message_text }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

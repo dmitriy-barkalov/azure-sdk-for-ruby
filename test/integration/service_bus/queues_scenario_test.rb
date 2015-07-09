@@ -33,8 +33,8 @@ describe "ServiceBus Queues Scenario" do
       subject.delete_queue queue_name
     rescue Azure::Core::Http::HTTPError => error
       ScenarioHelper.out "could not get an existing queue (" + error.type + "), proceeding..."
-      error.status_code.must_equal 404
-      error.type.must_equal "ResourceNotFound"
+      expect(error.status_code).to eq(404)
+      expect(error.type).to eq("ResourceNotFound")
     end
 
     q = Azure::ServiceBus::Queue.new(queue_name, {
@@ -46,10 +46,10 @@ describe "ServiceBus Queues Scenario" do
 
     ScenarioHelper.out 'Creating queue ' + queue_name
     q2 = subject.create_queue q
-    q2.max_size_in_megabytes.must_equal q.max_size_in_megabytes
-    q2.requires_duplicate_detection.must_equal q.requires_duplicate_detection
-    q2.enable_batched_operations.must_equal true
-    q2.max_delivery_count.must_equal 13
+    expect(q2.max_size_in_megabytes).to eq(q.max_size_in_megabytes)
+    expect(q2.requires_duplicate_detection).to eq(q.requires_duplicate_detection)
+    expect(q2.enable_batched_operations).to eq(true)
+    expect(q2.max_delivery_count).to eq(13)
 
     subject.get_queue queue_name
   end
@@ -96,7 +96,7 @@ describe "ServiceBus Queues Scenario" do
 
     message_count = (subject.get_queue queue_name).message_count
     ScenarioHelper.out 'Before getting any messages, Message count: ' + message_count.to_s
-    message_count.must_equal expected_count
+    expect(message_count).to eq(expected_count)
 
     # Peek the first message
     message1 = subject.peek_lock_queue_message queue_name, { :timeout => 20 }
@@ -104,7 +104,7 @@ describe "ServiceBus Queues Scenario" do
 
     message_count = (subject.get_queue queue_name).message_count
     ScenarioHelper.out 'Peek locked first message, Message count: ' + message_count.to_s
-    message_count.must_equal expected_count # Peek locked first message, count should not change
+    expect(message_count).to eq(expected_count) # Peek locked first message, count should not change
 
     # Get the second message
     message2 = subject.read_delete_queue_message queue_name,  { :timeout => 5 }
@@ -113,14 +113,14 @@ describe "ServiceBus Queues Scenario" do
 
     message_count = (subject.get_queue queue_name).message_count
     ScenarioHelper.out 'RECEIVE_AND_DELETE second message, Message count: ' + message_count.to_s
-    message_count.must_equal expected_count # RECEIVE_AND_DELETE second message, count decrements
+    expect(message_count).to eq(expected_count) # RECEIVE_AND_DELETE second message, count decrements
 
     # Unlock and get the first message
     subject.unlock_queue_message message1
 
     message_count = (subject.get_queue queue_name).message_count
     ScenarioHelper.out 'Unlocked first message, Message count: ' + message_count.to_s
-    message_count.must_equal expected_count # Unlocked first message, count stays the same
+    expect(message_count).to eq(expected_count) # Unlocked first message, count stays the same
 
     # Get the first unlocked message
     message1again = subject.read_delete_queue_message queue_name
@@ -130,7 +130,7 @@ describe "ServiceBus Queues Scenario" do
 
     message_count = (subject.get_queue queue_name).message_count
     ScenarioHelper.out 'got first message again, Message count: ' + message_count.to_s
-    message_count.must_equal expected_count # Got message one again (destructive), count should decrease
+    expect(message_count).to eq(expected_count) # Got message one again (destructive), count should decrease
 
     # Negative test, make sure unlocked messages cannot be deleted.
     begin
@@ -138,8 +138,8 @@ describe "ServiceBus Queues Scenario" do
       flunk 'Deleting a RECEIVEANDDELETE messasge should fail'
     rescue Azure::Core::Http::HTTPError => error
       ScenarioHelper.out "As expected, could not delete a deleted message"
-      error.status_code.must_equal 400
-      error.type.must_equal "Unknown"
+      expect(error.status_code).to eq(400)
+      expect(error.type).to eq("Unknown")
     end
 
     if expected_count > 0
@@ -149,7 +149,7 @@ describe "ServiceBus Queues Scenario" do
 
       message_count = (subject.get_queue queue_name).message_count
       ScenarioHelper.out 'Got third message, Message count: ' + message_count.to_s
-      message_count.must_equal expected_count # Peeked third message, count should not change
+      expect(message_count).to eq(expected_count) # Peeked third message, count should not change
 
       # Delete it
       subject.delete_queue_message message3.location
@@ -157,7 +157,7 @@ describe "ServiceBus Queues Scenario" do
 
       message_count = (subject.get_queue queue_name).message_count
       ScenarioHelper.out 'Deleted third message, Message count: ' + message_count.to_s
-      message_count.must_equal expected_count # Deleted third message, count decrements
+      expect(message_count).to eq(expected_count) # Deleted third message, count decrements
     end
 
     if expected_count > 0
@@ -168,7 +168,7 @@ describe "ServiceBus Queues Scenario" do
 
       message_count = (subject.get_queue queue_name).message_count
       ScenarioHelper.out 'Got fourth message, Message count: ' + message_count.to_s
-      message_count.must_equal expected_count # Got fourth message, count decrements
+      expect(message_count).to eq(expected_count) # Got fourth message, count decrements
     end
 
     # Get the rest of the messages
@@ -180,13 +180,13 @@ describe "ServiceBus Queues Scenario" do
 
       message_count = (subject.get_queue queue_name).message_count
       ScenarioHelper.out 'Got message #' + message_id.to_s + ' message, Message count: ' + message_count.to_s
-      message_count.must_equal expected_count
+      expect(message_count).to eq(expected_count)
       message_id = message_id + 1
     end
 
     message_count = (subject.get_queue queue_name).message_count
     ScenarioHelper.out 'Got all messages, Message count: ' + message_count.to_s
-    message_count.must_equal 0
+    expect(message_count).to eq(0)
   end
 
   it "should be able to upload many messages and read them back" do

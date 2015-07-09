@@ -28,10 +28,10 @@ describe "ServiceBus Rules" do
 
   it "should be able to create a new rule" do
     result = subject.create_rule topic, subscription, rule
-    result.must_be :kind_of?, Azure::ServiceBus::Rule
-    result.filter.must_be_kind_of Azure::ServiceBus::TrueFilter
-    result.filter.sql_expression.must_equal "1=1"
-    result.filter.compatibility_level.must_equal 20
+    expect(result).to be_a_kind_of(Azure::ServiceBus::Rule)
+    expect(result.filter).to be_a_kind_of(Azure::ServiceBus::TrueFilter)
+    expect(result.filter.sql_expression).to eq("1=1")
+    expect(result.filter.compatibility_level).to eq(20)
   end
 
   it "should be able to create a new rule object" do
@@ -40,10 +40,10 @@ describe "ServiceBus Rules" do
     ruleObject.topic = topic
 
     result = subject.create_rule ruleObject
-    result.must_be :kind_of?, Azure::ServiceBus::Rule
-    result.filter.must_be_kind_of Azure::ServiceBus::TrueFilter
-    result.filter.sql_expression.must_equal "1=1"
-    result.filter.compatibility_level.must_equal 20
+    expect(result).to be_a_kind_of(Azure::ServiceBus::Rule)
+    expect(result.filter).to be_a_kind_of(Azure::ServiceBus::TrueFilter)
+    expect(result.filter.sql_expression).to eq("1=1")
+    expect(result.filter.compatibility_level).to eq(20)
 
     subject.delete_rule result
   end
@@ -56,14 +56,14 @@ describe "ServiceBus Rules" do
     ruleObject.action = Azure::ServiceBus::SqlRuleAction.new({ :sql_expression => "set MyProperty2 = 'ABC'" })
 
     result = subject.create_rule ruleObject
-    result.must_be :kind_of?, Azure::ServiceBus::Rule
-    result.filter.must_be_kind_of Azure::ServiceBus::SqlFilter
-    result.filter.sql_expression.must_equal "MyProperty='XYZ'"
-    result.filter.compatibility_level.must_equal 20
+    expect(result).to be_a_kind_of(Azure::ServiceBus::Rule)
+    expect(result.filter).to be_a_kind_of(Azure::ServiceBus::SqlFilter)
+    expect(result.filter.sql_expression).to eq("MyProperty='XYZ'")
+    expect(result.filter.compatibility_level).to eq(20)
 
-    result.action.must_be_kind_of Azure::ServiceBus::SqlRuleAction
-    result.action.sql_expression.must_equal "set MyProperty2 = 'ABC'"
-    result.action.compatibility_level.must_equal 20
+    expect(result.action).to be_a_kind_of(Azure::ServiceBus::SqlRuleAction)
+    expect(result.action.sql_expression).to eq("set MyProperty2 = 'ABC'")
+    expect(result.action.compatibility_level).to eq(20)
 
     subject.delete_rule result
   end
@@ -76,13 +76,13 @@ describe "ServiceBus Rules" do
     ruleObject.action = Azure::ServiceBus::SqlRuleAction.new({ :sql_expression => "set MyProperty2 = 'ABC'" })
 
     result = subject.create_rule ruleObject
-    result.must_be :kind_of?, Azure::ServiceBus::Rule
-    result.filter.must_be_kind_of Azure::ServiceBus::CorrelationFilter
-    result.filter.correlation_id.must_equal "identifier"
+    expect(result).to be_a_kind_of(Azure::ServiceBus::Rule)
+    expect(result.filter).to be_a_kind_of(Azure::ServiceBus::CorrelationFilter)
+    expect(result.filter.correlation_id).to eq("identifier")
 
-    result.action.must_be_kind_of Azure::ServiceBus::SqlRuleAction
-    result.action.sql_expression.must_equal "set MyProperty2 = 'ABC'"
-    result.action.compatibility_level.must_equal 20
+    expect(result.action).to be_a_kind_of(Azure::ServiceBus::SqlRuleAction)
+    expect(result.action.sql_expression).to eq("set MyProperty2 = 'ABC'")
+    expect(result.action.compatibility_level).to eq(20)
 
     subject.delete_rule result
   end
@@ -96,10 +96,10 @@ describe "ServiceBus Rules" do
 
     it "should be able to get rules" do
       result = subject.get_rule topic, subscription, rule
-      result.must_be :kind_of?, Azure::ServiceBus::Rule
-      result.filter.must_be_kind_of Azure::ServiceBus::TrueFilter
-      result.filter.sql_expression.must_equal "1=1"
-      result.filter.compatibility_level.must_equal 20
+      expect(result).to be_a_kind_of(Azure::ServiceBus::Rule)
+      expect(result.filter).to be_a_kind_of(Azure::ServiceBus::TrueFilter)
+      expect(result.filter.sql_expression).to eq("1=1")
+      expect(result.filter.compatibility_level).to eq(20)
     end
 
     it "should be able to list rules" do
@@ -108,7 +108,7 @@ describe "ServiceBus Rules" do
       result.each { |r|
         rule_found = true if r.name == rule
       }
-      assert rule_found, "list_rules didn't include the expected rule"
+      expect(rule_found).to be_truthy "list_rules didn't include the expected rule"
     end
 
     describe 'when multiple rules exist' do
@@ -122,23 +122,23 @@ describe "ServiceBus Rules" do
       it "should be able to use $skip token" do
         result = subject.list_rules topic, subscription
         result2 = subject.list_rules topic, subscription, { :skip => 1 }
-        result2.length.must_equal result.length - 1
-        result2[0].id.must_equal result[1].id
+        expect(result2.length).to eq(result.length - 1)
+        expect(result2[0].id).to eq(result[1].id)
       end
       
       it "should be able to use $top token" do
         result = subject.list_rules topic, subscription
-        result.length.wont_equal 1
+        expect(result.length).not_to eq(1)
 
         result2 = subject.list_rules topic, subscription, { :top => 1 }
-        result2.length.must_equal 1
+        expect(result2.length).to eq(1)
       end
 
       it "should be able to use $skip and $top token together" do
         result = subject.list_rules topic, subscription
         result2 = subject.list_rules topic, subscription, { :skip => 1, :top => 1 }
-        result2.length.must_equal 1
-        result2[0].id.must_equal result[1].id
+        expect(result2.length).to eq(1)
+        expect(result2[0].id).to eq(result[1].id)
       end
     end
   end

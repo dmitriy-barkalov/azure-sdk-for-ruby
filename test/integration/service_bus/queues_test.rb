@@ -45,46 +45,46 @@ describe 'ServiceBus Queues' do
 
   it "should be able to create a new queue from a string" do
     queue = subject.create_queue queue_name
-    queue.must_be_kind_of Azure::ServiceBus::Queue
-    queue.name.must_equal queue_name
+    expect(queue).to be_a_kind_of(Azure::ServiceBus::Queue)
+    expect(queue.name).to eq(queue_name)
   end
 
   it "should be able to create a new queue from a Queue" do
     queue = subject.create_queue Azure::ServiceBus::Queue.new(queue_name)
-    queue.must_be_kind_of Azure::ServiceBus::Queue
-    queue.name.must_equal queue_name
+    expect(queue).to be_a_kind_of(Azure::ServiceBus::Queue)
+    expect(queue.name).to eq(queue_name)
   end
 
   it "should be able to create a new queue from a string and description Hash" do
     queue = subject.create_queue name_alternative, description_alternative
-    queue.must_be_kind_of Azure::ServiceBus::Queue
-    queue.name.must_equal name_alternative
+    expect(queue).to be_a_kind_of(Azure::ServiceBus::Queue)
+    expect(queue.name).to eq(name_alternative)
 
-    queue.lock_duration.must_equal 30.0
-    queue.max_size_in_megabytes.must_equal description_alternative[:max_size_in_megabytes]
-    queue.requires_duplicate_detection.must_equal description_alternative[:requires_duplicate_detection]
-    queue.requires_session.must_equal description_alternative[:requires_session]
-    queue.default_message_time_to_live.must_equal 1800.0
-    queue.dead_lettering_on_message_expiration.must_equal description_alternative[:dead_lettering_on_message_expiration]
-    queue.duplicate_detection_history_time_window.must_equal 1200.0
-    queue.max_delivery_count.must_equal description_alternative[:max_delivery_count]
-    queue.enable_batched_operations.must_equal description_alternative[:enable_batched_operations]
+    expect(queue.lock_duration).to eq(30.0)
+    expect(queue.max_size_in_megabytes).to eq(description_alternative[:max_size_in_megabytes])
+    expect(queue.requires_duplicate_detection).to eq(description_alternative[:requires_duplicate_detection])
+    expect(queue.requires_session).to eq(description_alternative[:requires_session])
+    expect(queue.default_message_time_to_live).to eq(1800.0)
+    expect(queue.dead_lettering_on_message_expiration).to eq(description_alternative[:dead_lettering_on_message_expiration])
+    expect(queue.duplicate_detection_history_time_window).to eq(1200.0)
+    expect(queue.max_delivery_count).to eq(description_alternative[:max_delivery_count])
+    expect(queue.enable_batched_operations).to eq(description_alternative[:enable_batched_operations])
   end
 
   it "should be able to create a new queue from a Queue with a description Hash" do
     queue = subject.create_queue Azure::ServiceBus::Queue.new(name_alternative, description_alternative)
-    queue.must_be_kind_of Azure::ServiceBus::Queue
-    queue.name.must_equal name_alternative
+    expect(queue).to be_a_kind_of(Azure::ServiceBus::Queue)
+    expect(queue.name).to eq(name_alternative)
 
-    queue.lock_duration.must_equal 30.0
-    queue.max_size_in_megabytes.must_equal description_alternative[:max_size_in_megabytes]
-    queue.requires_duplicate_detection.must_equal description_alternative[:requires_duplicate_detection]
-    queue.requires_session.must_equal description_alternative[:requires_session]
-    queue.default_message_time_to_live.must_equal 1800.0
-    queue.dead_lettering_on_message_expiration.must_equal description_alternative[:dead_lettering_on_message_expiration]
-    queue.duplicate_detection_history_time_window.must_equal 1200.0
-    queue.max_delivery_count.must_equal description_alternative[:max_delivery_count]
-    queue.enable_batched_operations.must_equal description_alternative[:enable_batched_operations]
+    expect(queue.lock_duration).to eq(30.0)
+    expect(queue.max_size_in_megabytes).to eq(description_alternative[:max_size_in_megabytes])
+    expect(queue.requires_duplicate_detection).to eq(description_alternative[:requires_duplicate_detection])
+    expect(queue.requires_session).to eq(description_alternative[:requires_session])
+    expect(queue.default_message_time_to_live).to eq(1800.0)
+    expect(queue.dead_lettering_on_message_expiration).to eq(description_alternative[:dead_lettering_on_message_expiration])
+    expect(queue.duplicate_detection_history_time_window).to eq(1200.0)
+    expect(queue.max_delivery_count).to eq(description_alternative[:max_delivery_count])
+    expect(queue.enable_batched_operations).to eq(description_alternative[:enable_batched_operations])
   end
 
   describe 'when a queue exists' do
@@ -92,14 +92,12 @@ describe 'ServiceBus Queues' do
 
     describe '#delete_queue' do
       it "should raise exception if the queue cannot be deleted" do
-        assert_raises(Azure::Core::Http::HTTPError) do
-          subject.delete_queue ServiceBusQueueNameHelper.name
-        end
+        expect { subject.delete_queue ServiceBusQueueNameHelper.name }.to raise_error(Azure::Core::Http::HTTPError)
       end
 
       it "should be able to delete the queue" do
         response = subject.delete_queue queue_name
-        response.must_equal nil
+        expect(response).to eq(nil)
       end
     end
 
@@ -107,14 +105,12 @@ describe 'ServiceBus Queues' do
       it "should be able to get a queue by name" do
         result = subject.get_queue queue_name
 
-        result.must_be_kind_of Azure::ServiceBus::Queue
-        result.name.must_equal queue_name
+        expect(result).to be_a_kind_of(Azure::ServiceBus::Queue)
+        expect(result.name).to eq(queue_name)
       end
 
       it "if the queue doesn't exists it should throw" do
-        assert_raises(Azure::Core::Http::HTTPError) do
-          subject.get_queue ServiceBusQueueNameHelper.name
-        end
+        expect { subject.get_queue ServiceBusQueueNameHelper.name }.to raise_error(Azure::Core::Http::HTTPError)
       end
     end
 
@@ -129,7 +125,7 @@ describe 'ServiceBus Queues' do
       it "should be able to get a list of queues" do
         result = subject.list_queues
 
-        result.must_be :kind_of?, Array
+        expect(result).to be_a_kind_of(Array)
         q_found = false
         q1_found = false
         q2_found = false
@@ -138,29 +134,29 @@ describe 'ServiceBus Queues' do
           q1_found = true if q.name == name1
           q2_found = true if q.name == name2
         }
-        assert (q_found and q1_found and q2_found), "list_queues did not return expected queues"
+        expect((q_found and q1_found and q2_found)).to be_truthy "list_queues did not return expected queues"
       end
 
       it "should be able to use $skip token with list_queues" do
         result = subject.list_queues
         result2 = subject.list_queues({ :skip => 1 })
-        result2.length.must_equal result.length - 1
-        result2[0].id.must_equal result[1].id
+        expect(result2.length).to eq(result.length - 1)
+        expect(result2[0].id).to eq(result[1].id)
       end
       
       it "should be able to use $top token with list_queues" do
         result = subject.list_queues
-        result.length.wont_equal 1
+        expect(result.length).not_to eq(1)
 
         result2 = subject.list_queues({ :top => 1 })
-        result2.length.must_equal 1
+        expect(result2.length).to eq(1)
       end
 
       it "should be able to use $skip and $top token together with list_queues" do
         result = subject.list_queues
         result2 = subject.list_queues({ :skip => 1, :top => 1 })
-        result2.length.must_equal 1
-        result2[0].id.must_equal result[1].id
+        expect(result2.length).to eq(1)
+        expect(result2[0].id).to eq(result[1].id)
       end
     end
 
@@ -169,7 +165,7 @@ describe 'ServiceBus Queues' do
         m.to = "yo"
       end
       res = subject.send_queue_message queue_name, msg
-      res.must_be_nil
+      expect(res).to be_nil
     end
 
     describe "when the queue has messages" do
@@ -194,18 +190,18 @@ describe 'ServiceBus Queues' do
       
       it "should be able to peek a message from a queue" do
         retrieved = subject.peek_lock_queue_message queue_name
-        retrieved.must_be :kind_of?, Azure::ServiceBus::BrokeredMessage
+        expect(retrieved).to be_a_kind_of(Azure::ServiceBus::BrokeredMessage)
 
-        retrieved.body.must_equal msg.body
-        retrieved.to.must_equal msg.to
-        retrieved.label.must_equal msg.label
+        expect(retrieved.body).to eq(msg.body)
+        expect(retrieved.to).to eq(msg.to)
+        expect(retrieved.label).to eq(msg.label)
 
         properties.each { |k,v|
           unless properties[k].class == Time
-            retrieved.properties[k.downcase].must_equal properties[k]
+            expect(retrieved.properties[k.downcase]).to eq(properties[k])
           else
             # Time comes back as string as there is no good way to distinguish
-            retrieved.properties[k.downcase].to_s.must_equal properties[k].httpdate
+            expect(retrieved.properties[k.downcase].to_s).to eq(properties[k].httpdate)
           end
         }
 
@@ -216,13 +212,13 @@ describe 'ServiceBus Queues' do
       it "should be able to read-delete a message from a queue" do
         retrieved = subject.read_delete_queue_message queue_name
 
-        retrieved.must_be :kind_of?, Azure::ServiceBus::BrokeredMessage
-        retrieved.body.must_equal msg.body
-        retrieved.to.must_equal msg.to
+        expect(retrieved).to be_a_kind_of(Azure::ServiceBus::BrokeredMessage)
+        expect(retrieved.body).to eq(msg.body)
+        expect(retrieved.to).to eq(msg.to)
 
         # it should be deleted
         retrieved = subject.read_delete_queue_message queue_name, { :timeout => 2 }
-        retrieved.must_be_nil
+        expect(retrieved).to be_nil
       end
 
       it "should be able to unlock a message from a queue" do
@@ -230,36 +226,36 @@ describe 'ServiceBus Queues' do
 
         # There shouldn't be an available message in the queue
         retrieved2 = subject.peek_lock_queue_message queue_name, { :timeout => 2 }
-        retrieved2.must_be_nil
+        expect(retrieved2).to be_nil
 
         # Unlock the message
         res = subject.unlock_queue_message retrieved
-        res.must_be_nil
+        expect(res).to be_nil
 
         # The message should be available once again
         retrieved = subject.peek_lock_queue_message queue_name, { :timeout => 2 }
-        retrieved.body.must_equal msg.body
+        expect(retrieved.body).to eq(msg.body)
       end
     
       it "should be able to delete a message from a queue" do
 
         retrieved = subject.peek_lock_queue_message queue_name
-        retrieved.body.must_equal msg.body
+        expect(retrieved.body).to eq(msg.body)
 
         subject.delete_queue_message retrieved
 
         # it should be deleted
         retrieved = subject.peek_lock_queue_message queue_name, { :timeout => 2 }
-        assert_nil retrieved
+        expect(retrieved).to be_nil
       end
 
       it "should be able to read a message from a queue" do
         subject.send_queue_message queue_name, msg
         retrieved = subject.receive_queue_message queue_name
 
-        retrieved.must_be :kind_of?, Azure::ServiceBus::BrokeredMessage
-        retrieved.body.must_equal msg.body
-        retrieved.to.must_equal msg.to
+        expect(retrieved).to be_a_kind_of(Azure::ServiceBus::BrokeredMessage)
+        expect(retrieved.body).to eq(msg.body)
+        expect(retrieved.to).to eq(msg.to)
       end
     end
   end

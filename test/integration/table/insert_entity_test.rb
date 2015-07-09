@@ -48,13 +48,13 @@ describe Azure::Table::TableService do
 
     it "creates an entity" do 
       result = subject.insert_entity table_name, entity_properties
-      result.must_be_kind_of Azure::Table::Entity
-      result.table.must_equal table_name
+      expect(result).to be_a_kind_of(Azure::Table::Entity)
+      expect(result.table).to eq(table_name)
       entity_properties.each { |k,v|
         if entity_properties[k].class == Time
-          floor_to(result.properties[k].to_f, 6).must_equal floor_to(entity_properties[k].to_f, 6)
+          expect(floor_to(result.properties[k].to_f, 6)).to eq(floor_to(entity_properties[k].to_f, 6))
         else
-          result.properties[k].must_equal entity_properties[k]
+          expect(result.properties[k]).to eq(entity_properties[k])
         end
       }
     end
@@ -64,25 +64,21 @@ describe Azure::Table::TableService do
     end
 
     it "errors on an invalid table name" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.insert_entity "this_table.cannot-exist!", entity_properties
-      end
+      expect { subject.insert_entity "this_table.cannot-exist!", entity_properties }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an invalid partition key" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        entity = entity_properties.dup
+      expect { entity = entity_properties.dup
         entity["PartitionKey"] = "this/partition\\key#is?invalid"
         subject.insert_entity table_name, entity
-      end
+       }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an invalid row key" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        entity = entity_properties.dup
+      expect { entity = entity_properties.dup
         entity["RowKey"] = "this/row\\key#is?invalid"
         subject.insert_entity table_name, entity
-      end
+       }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

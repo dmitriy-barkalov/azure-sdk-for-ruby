@@ -25,13 +25,11 @@ describe Azure::Table::TableService do
 
     it "gets the last updated time of a valid table" do
       result = subject.get_table table_name
-      result.must_be_kind_of Time
+      expect(result).to be_a_kind_of(Time)
     end
 
     it "errors on an invalid table" do
-    	assert_raises(Azure::Core::Http::HTTPError) do
-   	  	subject.get_table "this_table.cannot-exist!"
-   		end
+    	expect { subject.get_table "this_table.cannot-exist!" }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

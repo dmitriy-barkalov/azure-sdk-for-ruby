@@ -25,7 +25,7 @@ describe Azure::Blob::BlobService do
 
     it 'creates the container' do
       container = subject.create_container container_name
-      container.name.must_equal container_name
+      expect(container.name).to eq(container_name)
     end
 
     it 'creates the container with custom metadata' do
@@ -33,28 +33,24 @@ describe Azure::Blob::BlobService do
 
       container = subject.create_container container_name, { :metadata => metadata }
       
-      container.name.must_equal container_name
-      container.metadata.must_equal metadata
+      expect(container.name).to eq(container_name)
+      expect(container.metadata).to eq(metadata)
       container = subject.get_container_metadata container_name
 
       metadata.each { |k,v|
-        container.metadata.must_include k.downcase
-        container.metadata[k.downcase].must_equal v
+        expect(container.metadata).to include(k.downcase)
+        expect(container.metadata[k.downcase]).to eq(v)
       }
     end
 
     it 'errors if the container already exists' do
       subject.create_container container_name
       
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.create_container container_name
-      end
+      expect { subject.create_container container_name }.to raise_error(Azure::Core::Http::HTTPError)
     end
     
     it 'errors if the container name is invalid' do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.create_container 'this_container.cannot-exist!'
-      end
+      expect { subject.create_container 'this_container.cannot-exist!' }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

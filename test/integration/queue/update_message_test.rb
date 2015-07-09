@@ -31,44 +31,38 @@ describe Azure::Queue::QueueService do
 
     it "updates a message" do
       messages = subject.list_messages queue_name, 500
-      messages.length.must_equal 1
+      expect(messages.length).to eq(1)
       message = messages.first
-      message.message_text.must_equal message_text
+      expect(message.message_text).to eq(message_text)
 
       pop_receipt, time_next_visible = subject.update_message queue_name, message.id, message.pop_receipt, new_message_text, 0
 
       result = subject.peek_messages queue_name
-      result.wont_be_empty
+      expect(result).not_to be_empty
 
       message2 = result[0]
-      message2.id.must_equal message.id
-      message2.message_text.must_equal new_message_text
+      expect(message2.id).to eq(message.id)
+      expect(message2.message_text).to eq(new_message_text)
     end
 
     it "errors on an non-existent queue" do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.update_message QueueNameHelper.name, "message.id", "message.pop_receipt", new_message_text, 0
-      end
+      expect { subject.update_message QueueNameHelper.name, "message.id", "message.pop_receipt", new_message_text, 0 }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an non-existent message id" do
       messages = subject.list_messages queue_name, 500
-      messages.length.must_equal 1
+      expect(messages.length).to eq(1)
       message = messages.first
 
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.update_message queue_name, "bad.message.id", message.pop_receipt, new_message_text, 0
-      end
+      expect { subject.update_message queue_name, "bad.message.id", message.pop_receipt, new_message_text, 0 }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it "errors on an non-existent pop_receipt" do
       messages = subject.list_messages queue_name, 500
-      messages.length.must_equal 1
+      expect(messages.length).to eq(1)
       message = messages.first
 
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.update_message queue_name, message.id, "bad.message.pop_receipt", new_message_text, 0
-      end
+      expect { subject.update_message queue_name, message.id, "bad.message.pop_receipt", new_message_text, 0 }.to raise_error(Azure::Core::Http::HTTPError)
     end
   end
 end

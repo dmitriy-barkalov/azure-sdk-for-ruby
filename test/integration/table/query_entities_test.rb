@@ -58,16 +58,16 @@ describe Azure::Table::TableService do
 
     it "Queries a table for list of entities" do
       result = subject.query_entities table_name
-      result.must_be_kind_of Array 
-      result.length.must_equal ((partitions.length + 1) * entities_per_partition)
+      expect(result).to be_a_kind_of(Array)
+      expect(result.length).to eq(((partitions.length + 1) * entities_per_partition))
 
       result.each { |e|
-        entities[e.properties["PartitionKey"]].must_include e.properties["RowKey"]
+        expect(entities[e.properties["PartitionKey"]]).to include(e.properties["RowKey"])
         entity_properties.each { |k,v|
           unless v.class == Time
-            e.properties[k].must_equal v
+            expect(e.properties[k]).to eq(v)
           else
-            e.properties[k].to_i.must_equal v.to_i
+            expect(e.properties[k].to_i).to eq(v.to_i)
           end
         }
       }
@@ -78,16 +78,16 @@ describe Azure::Table::TableService do
       row_key = entities[partition][0]
 
       result = subject.query_entities table_name, { :partition_key => partition, :row_key => row_key }
-      result.must_be_kind_of Array 
-      result.length.must_equal 1
+      expect(result).to be_a_kind_of(Array)
+      expect(result.length).to eq(1)
 
       result.each { |e|
-        e.properties["RowKey"].must_equal row_key
+        expect(e.properties["RowKey"]).to eq(row_key)
         entity_properties.each { |k,v|
           unless v.class == Time
-            e.properties[k].must_equal v
+            expect(e.properties[k]).to eq(v)
           else
-            e.properties[k].to_i.must_equal v.to_i
+            expect(e.properties[k].to_i).to eq(v.to_i)
           end
         }
       }
@@ -97,14 +97,14 @@ describe Azure::Table::TableService do
       projection = ["CustomIntegerProperty", "ThisPropertyDoesNotExist"]
       puts '#########################################'
       result = subject.query_entities table_name, { :select => projection }
-      result.must_be_kind_of Array 
-      result.length.must_equal ((partitions.length + 1) * entities_per_partition)
+      expect(result).to be_a_kind_of(Array)
+      expect(result.length).to eq(((partitions.length + 1) * entities_per_partition))
 
       result.each { |e|
-        e.properties.length.must_equal projection.length
-        e.properties["CustomIntegerProperty"].must_equal entity_properties["CustomIntegerProperty"]
-        e.properties.must_include "ThisPropertyDoesNotExist"
-        e.properties["ThisPropertyDoesNotExist"].must_equal ""
+        expect(e.properties.length).to eq(projection.length)
+        expect(e.properties["CustomIntegerProperty"]).to eq(entity_properties["CustomIntegerProperty"])
+        expect(e.properties).to include("ThisPropertyDoesNotExist")
+        expect(e.properties["ThisPropertyDoesNotExist"]).to eq("")
       }
     end
 
@@ -118,43 +118,43 @@ describe Azure::Table::TableService do
 
       filter = "CustomIntegerProperty gt #{entity_properties["CustomIntegerProperty"]} and CustomBooleanProperty eq false"
       result = subject.query_entities table_name, { :filter => filter }
-      result.must_be_kind_of Array 
-      result.length.must_equal 1
-      result.first.properties["PartitionKey"].must_equal "filter-test-partition"
+      expect(result).to be_a_kind_of(Array)
+      expect(result.length).to eq(1)
+      expect(result.first.properties["PartitionKey"]).to eq("filter-test-partition")
 
       filter = "CustomIntegerProperty gt #{entity_properties["CustomIntegerProperty"]} and CustomBooleanProperty eq true"
       result = subject.query_entities table_name, { :filter => filter }
-      result.must_be_kind_of Array 
-      result.length.must_equal 0
+      expect(result).to be_a_kind_of(Array)
+      expect(result.length).to eq(0)
     end
 
     it "can limit the result set using the top parameter" do
       result = subject.query_entities table_name, { :top => 3 }
-      result.must_be_kind_of Array 
-      result.length.must_equal 3
-      result.continuation_token.wont_be_nil
+      expect(result).to be_a_kind_of(Array)
+      expect(result.length).to eq(3)
+      expect(result.continuation_token).not_to be_nil
     end
 
     it "can page results using the top parameter and continuation_token" do
       result = subject.query_entities table_name, { :top => 3 }
-      result.must_be_kind_of Array 
-      result.length.must_equal 3
-      result.continuation_token.wont_be_nil
+      expect(result).to be_a_kind_of(Array)
+      expect(result.length).to eq(3)
+      expect(result.continuation_token).not_to be_nil
 
       result2 = subject.query_entities table_name, { :top => 3, :continuation_token => result.continuation_token }
-      result2.must_be_kind_of Array 
-      result2.length.must_equal 3
-      result2.continuation_token.wont_be_nil
+      expect(result2).to be_a_kind_of(Array)
+      expect(result2.length).to eq(3)
+      expect(result2.continuation_token).not_to be_nil
 
       result3 = subject.query_entities table_name, { :top => 3, :continuation_token => result2.continuation_token }
-      result3.must_be_kind_of Array 
-      result3.length.must_equal 3
-      result3.continuation_token.wont_be_nil
+      expect(result3).to be_a_kind_of(Array)
+      expect(result3.length).to eq(3)
+      expect(result3.continuation_token).not_to be_nil
 
       result4 = subject.query_entities table_name, { :top => 3, :continuation_token => result3.continuation_token }
-      result4.must_be_kind_of Array 
-      result4.length.must_equal 3
-      result4.continuation_token.must_be_nil
+      expect(result4).to be_a_kind_of(Array)
+      expect(result4.length).to eq(3)
+      expect(result4.continuation_token).to be_nil
     end
 
     it "can combine projection, filtering, and paging in the same query" do
@@ -168,28 +168,28 @@ describe Azure::Table::TableService do
       filter = "CustomIntegerProperty eq #{entity_properties["CustomIntegerProperty"]}"
       projection = ["PartitionKey", "CustomIntegerProperty"]
       result = subject.query_entities table_name, { :select => projection, :filter => filter, :top => 3 }
-      result.must_be_kind_of Array 
-      result.length.must_equal 3
-      result.continuation_token.wont_be_nil
+      expect(result).to be_a_kind_of(Array)
+      expect(result.length).to eq(3)
+      expect(result.continuation_token).not_to be_nil
 
-      result.first.properties["CustomIntegerProperty"].must_equal entity_properties["CustomIntegerProperty"]
-      result.first.properties["PartitionKey"].wont_be_nil
-      result.first.properties.length.must_equal 2
+      expect(result.first.properties["CustomIntegerProperty"]).to eq(entity_properties["CustomIntegerProperty"])
+      expect(result.first.properties["PartitionKey"]).not_to be_nil
+      expect(result.first.properties.length).to eq(2)
 
       result2 = subject.query_entities table_name, { :select => projection, :filter => filter, :top => 3, :continuation_token => result.continuation_token }
-      result2.must_be_kind_of Array 
-      result2.length.must_equal 3
-      result2.continuation_token.wont_be_nil
+      expect(result2).to be_a_kind_of(Array)
+      expect(result2.length).to eq(3)
+      expect(result2.continuation_token).not_to be_nil
 
       result3 = subject.query_entities table_name, { :select => projection, :filter => filter, :top => 3, :continuation_token => result2.continuation_token }
-      result3.must_be_kind_of Array 
-      result3.length.must_equal 3
-      result3.continuation_token.wont_be_nil
+      expect(result3).to be_a_kind_of(Array)
+      expect(result3.length).to eq(3)
+      expect(result3.continuation_token).not_to be_nil
 
       result4 = subject.query_entities table_name, { :select => projection, :filter => filter, :top => 3, :continuation_token => result3.continuation_token }
-      result4.must_be_kind_of Array 
-      result4.length.must_equal 3
-      result4.continuation_token.must_be_nil
+      expect(result4).to be_a_kind_of(Array)
+      expect(result4.length).to eq(3)
+      expect(result4.continuation_token).to be_nil
     end
 
   end

@@ -36,33 +36,33 @@ describe Azure::Blob::BlobService do
 
     it 'copies an existing blob to a new storage location' do
       copy_id, copy_status = subject.copy_blob dest_container_name, dest_blob_name, source_container_name, source_blob_name
-      copy_id.wont_be_nil
+      expect(copy_id).not_to be_nil
 
       blob, returned_content = subject.get_blob dest_container_name, dest_blob_name
 
-      blob.name.must_equal dest_blob_name
-      returned_content.must_equal content
+      expect(blob.name).to eq(dest_blob_name)
+      expect(returned_content).to eq(content)
     end
 
     it 'returns a copyid which can be used to monitor status of the asynchronous copy operation' do
       copy_id, copy_status = subject.copy_blob dest_container_name, dest_blob_name, source_container_name, source_blob_name
-      copy_id.wont_be_nil
+      expect(copy_id).not_to be_nil
 
       counter = 0
       finished = false
       while(counter < 10 and not finished)
         sleep(1)
         blob = subject.get_blob_properties dest_container_name, dest_blob_name
-        blob.properties[:copy_id].must_equal copy_id
+        expect(blob.properties[:copy_id]).to eq(copy_id)
         finished = blob.properties[:copy_status] == "success"
         counter +=1
       end
-      finished.must_equal true
+      expect(finished).to eq(true)
 
       blob, returned_content = subject.get_blob dest_container_name, dest_blob_name
 
-      blob.name.must_equal dest_blob_name
-      returned_content.must_equal content
+      expect(blob.name).to eq(dest_blob_name)
+      expect(returned_content).to eq(content)
     end
 
     describe 'when a snapshot is specified' do
@@ -72,7 +72,7 @@ describe Azure::Blob::BlobService do
         # verify blob is updated, and content is different than snapshot
         subject.create_block_blob source_container_name, source_blob_name, content + "more content"
         blob, returned_content = subject.get_blob source_container_name, source_blob_name
-        returned_content.must_equal content + "more content"
+        expect(returned_content).to eq(content) + "more content"
 
         # do copy against, snapshot
         subject.copy_blob dest_container_name, dest_blob_name, source_container_name, source_blob_name, { :source_snapshot => snapshot }
@@ -80,33 +80,31 @@ describe Azure::Blob::BlobService do
         blob, returned_content = subject.get_blob dest_container_name, dest_blob_name
 
         # verify copied content is old content 
-        returned_content.must_equal content
+        expect(returned_content).to eq(content)
       end
     end
    
     describe 'when a options hash is used' do
       it 'replaces source metadata on the copy with provided Hash in :metadata property' do
         copy_id, copy_status = subject.copy_blob dest_container_name, dest_blob_name, source_container_name, source_blob_name, { :metadata => metadata }
-        copy_id.wont_be_nil
+        expect(copy_id).not_to be_nil
 
         blob, returned_content = subject.get_blob dest_container_name, dest_blob_name
 
-        blob.name.must_equal dest_blob_name
-        returned_content.must_equal content
+        expect(blob.name).to eq(dest_blob_name)
+        expect(returned_content).to eq(content)
 
         blob = subject.get_blob_metadata dest_container_name, dest_blob_name
 
         metadata.each { |k,v|
-          blob.metadata.must_include k
-          blob.metadata[k].must_equal v
+          expect(blob.metadata).to include(k)
+          expect(blob.metadata[k]).to eq(v)
         }
       end
 
       it 'can specify ETag matching behaviours' do
         # invalid if match
-        assert_raises(Azure::Core::Http::HTTPError) do
-          subject.copy_blob dest_container_name, dest_blob_name, source_container_name, source_blob_name, { :source_if_match => "fake" }
-        end
+        expect { subject.copy_blob dest_container_name, dest_blob_name, source_container_name, source_blob_name, { :source_if_match => "fake" } }.to raise_error(Azure::Core::Http::HTTPError)
       end
     end
   end

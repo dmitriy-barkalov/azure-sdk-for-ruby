@@ -26,26 +26,20 @@ describe Azure::SqlDatabaseManagementService do
 
     it 'should be able to create a new sql database server.' do
       sql_server = subject.create_server(login_name, 'User@123', WindowsImageLocation)
-      sql_server.name.wont_be_nil
-      sql_server.location.must_equal WindowsImageLocation
-      sql_server.administrator_login.must_equal login_name
+      expect(sql_server.name).not_to be_nil
+      expect(sql_server.location).to eq(WindowsImageLocation)
+      expect(sql_server.administrator_login).to eq(login_name)
       subject.delete_server sql_server.name
     end
 
     it 'errors if the sql server location does not exist' do
       location = 'unknown-location'
-      exception = assert_raises(RuntimeError) do
-        subject.create_server(login_name, 'User@123', location)
-      end
-      assert_match(/Location \'#{location}\' cannot be found/i, exception.message)
+      expect { subject.create_server(login_name, 'User@123', location) }.to raise_error(RuntimeError, /Location \'#{location}\' cannot be found/i)
     end
 
     it 'errors if the sql server passsword is invalid' do
       password = 'weak'
-      exception = assert_raises(RuntimeError) do
-        subject.create_server(login_name, password, WindowsImageLocation)
-      end
-      assert_match(/Password validation failed/i, exception.message)
+      expect { subject.create_server(login_name, password, WindowsImageLocation) }.to raise_error(RuntimeError, /Password validation failed/i)
     end
 
   end

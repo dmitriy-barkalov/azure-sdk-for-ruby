@@ -37,27 +37,27 @@ describe "ServiceBus Subscriptions" do
       :requires_session => false
     })
 
-    s.requires_session.must_equal false
+    expect(s.requires_session).to eq(false)
   end
 
   it "should be able to create a new subscription" do
     result = subject.create_subscription topic, subscription
-    result.must_be :kind_of?, Azure::ServiceBus::Subscription
-    result.name.must_equal subscription
+    expect(result).to be_a_kind_of(Azure::ServiceBus::Subscription)
+    expect(result.name).to eq(subscription)
   end
 
   it "should be able to create a new subscription from a string and description Hash" do
     result = subject.create_subscription topic, subscription_alternative, description_alternative
-    result.must_be :kind_of?, Azure::ServiceBus::Subscription
-    result.name.must_equal subscription_alternative
+    expect(result).to be_a_kind_of(Azure::ServiceBus::Subscription)
+    expect(result.name).to eq(subscription_alternative)
 
-    result.lock_duration.must_equal 30.0
-    result.requires_session.must_equal description_alternative[:requires_session]
-    result.default_message_time_to_live.must_equal 1800.0
-    result.dead_lettering_on_message_expiration.must_equal description_alternative[:dead_lettering_on_message_expiration]
-    result.dead_lettering_on_filter_evaluation_exceptions.must_equal description_alternative[:dead_lettering_on_filter_evaluation_exceptions]
-    result.max_delivery_count.must_equal description_alternative[:max_delivery_count]
-    result.enable_batched_operations.must_equal description_alternative[:enable_batched_operations]
+    expect(result.lock_duration).to eq(30.0)
+    expect(result.requires_session).to eq(description_alternative[:requires_session])
+    expect(result.default_message_time_to_live).to eq(1800.0)
+    expect(result.dead_lettering_on_message_expiration).to eq(description_alternative[:dead_lettering_on_message_expiration])
+    expect(result.dead_lettering_on_filter_evaluation_exceptions).to eq(description_alternative[:dead_lettering_on_filter_evaluation_exceptions])
+    expect(result.max_delivery_count).to eq(description_alternative[:max_delivery_count])
+    expect(result.enable_batched_operations).to eq(description_alternative[:enable_batched_operations])
   end
 
   it "should be able to create a new subscription with objects" do
@@ -66,9 +66,9 @@ describe "ServiceBus Subscriptions" do
     subscriptionObject.max_delivery_count = 3
 
     result = subject.create_subscription subscriptionObject
-    result.must_be :kind_of?, Azure::ServiceBus::Subscription
-    result.name.must_equal subscriptionObject.name
-    result.max_delivery_count.must_equal subscriptionObject.max_delivery_count
+    expect(result).to be_a_kind_of(Azure::ServiceBus::Subscription)
+    expect(result.name).to eq(subscriptionObject.name)
+    expect(result.max_delivery_count).to eq(subscriptionObject.max_delivery_count)
 
     subject.delete_subscription result
   end
@@ -81,8 +81,8 @@ describe "ServiceBus Subscriptions" do
 
     it "should be able to get the subscription" do
       result = subject.get_subscription topic, subscription
-      result.must_be :kind_of?, Azure::ServiceBus::Subscription
-      result.name.must_equal subscription
+      expect(result).to be_a_kind_of(Azure::ServiceBus::Subscription)
+      expect(result.name).to eq(subscription)
     end
 
     it "should be able to list subscriptions" do
@@ -91,7 +91,7 @@ describe "ServiceBus Subscriptions" do
       result.each { |s|
         subscription_found = true if s.name == subscription
       }
-      assert subscription_found, "list_subscriptions didn't include the expected subscription"
+      expect(subscription_found).to be_truthy "list_subscriptions didn't include the expected subscription"
     end
 
     describe "when there are messages" do
@@ -108,50 +108,50 @@ describe "ServiceBus Subscriptions" do
       it "should be able to peek lock a message" do
         retrieved = subject.peek_lock_subscription_message topic, subscription
 
-        retrieved.to.must_equal msg.to
-        retrieved.body.must_equal msg.body
-        retrieved.label.must_equal msg.label
+        expect(retrieved.to).to eq(msg.to)
+        expect(retrieved.body).to eq(msg.body)
+        expect(retrieved.label).to eq(msg.label)
 
         retrieved = subject.read_delete_subscription_message topic, subscription, { :timeout => 1 }
-        retrieved.must_be_nil
+        expect(retrieved).to be_nil
       end
 
       it "should be able to read delete a message" do
         retrieved = subject.read_delete_subscription_message topic, subscription
 
-        retrieved.must_be :kind_of?, Azure::ServiceBus::BrokeredMessage
-        retrieved.body.must_equal msg.body
-        retrieved.to.must_equal msg.to
+        expect(retrieved).to be_a_kind_of(Azure::ServiceBus::BrokeredMessage)
+        expect(retrieved.body).to eq(msg.body)
+        expect(retrieved.to).to eq(msg.to)
 
         # it should be deleted
         retrieved = subject.read_delete_subscription_message topic, subscription, { :timeout => 1 }
-        retrieved.must_be_nil
+        expect(retrieved).to be_nil
       end
 
       it "should be able to unlock a message" do
         retrieved = subject.peek_lock_subscription_message topic, subscription, { :timeout => 1 }
-        retrieved.body.must_equal msg.body
+        expect(retrieved.body).to eq(msg.body)
 
         # There shouldn't be an available message in the queue
         retrieved2 = subject.peek_lock_subscription_message topic, subscription, { :timeout => 1 }
-        retrieved2.must_be_nil
+        expect(retrieved2).to be_nil
 
         # Unlock the message
         res = subject.unlock_subscription_message retrieved
-        res.must_be_nil
+        expect(res).to be_nil
 
         # The message should be available once again
         retrieved = subject.peek_lock_subscription_message topic, subscription, { :timeout => 1 }
-        retrieved.body.must_equal msg.body
+        expect(retrieved.body).to eq(msg.body)
       end
 
       it "should be able to read a message from a subscription" do
         subject.send_topic_message topic, msg
         retrieved = subject.receive_subscription_message topic, subscription
 
-        retrieved.to.must_equal msg.to
-        retrieved.body.must_equal msg.body
-        retrieved.label.must_equal msg.label
+        expect(retrieved.to).to eq(msg.to)
+        expect(retrieved.body).to eq(msg.body)
+        expect(retrieved.label).to eq(msg.label)
       end
     end
 
@@ -177,34 +177,34 @@ describe "ServiceBus Subscriptions" do
           subscription2_found = true if s.name == subscription2
         }
 
-        assert (subscription_found and subscription1_found and subscription2_found), "list_subscriptions didn't include the expected subscriptions"
+        expect((subscription_found and subscription1_found and subscription2_found)).to be_truthy "list_subscriptions didn't include the expected subscriptions"
       end
 
       it "should be able to use $skip token" do
         result = subject.list_subscriptions topic
         result2 = subject.list_subscriptions topic, { :skip => 1 }
-        result2.length.must_equal result.length - 1
-        result2.continuation_token.must_be_nil
-        result2[0].id.must_equal result[1].id
+        expect(result2.length).to eq(result.length - 1)
+        expect(result2.continuation_token).to be_nil
+        expect(result2[0].id).to eq(result[1].id)
       end
       
       it "should be able to use $top token" do
         result = subject.list_subscriptions topic
-        result.length.wont_equal 1
-        result.continuation_token.must_be_nil
+        expect(result.length).not_to eq(1)
+        expect(result.continuation_token).to be_nil
 
         result2 = subject.list_subscriptions topic, { :top => 1 }
-        result2.continuation_token.wont_be_nil
-        result2.continuation_token[:skip].wont_be_nil
-        result2.continuation_token[:top].wont_be_nil
-        result2.length.must_equal 1
+        expect(result2.continuation_token).not_to be_nil
+        expect(result2.continuation_token[:skip]).not_to be_nil
+        expect(result2.continuation_token[:top]).not_to be_nil
+        expect(result2.length).to eq(1)
       end
 
       it "should be able to use $skip and $top token together" do
         result = subject.list_subscriptions topic
         result2 = subject.list_subscriptions topic, { :skip => 1, :top => 1 }
-        result2.length.must_equal 1
-        result2[0].id.must_equal result[1].id
+        expect(result2.length).to eq(1)
+        expect(result2[0].id).to eq(result[1].id)
       end
     end
   end

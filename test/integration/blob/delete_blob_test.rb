@@ -33,15 +33,11 @@ describe Azure::Blob::BlobService do
     end
 
     it 'errors if the container does not exist' do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.delete_blob ContainerNameHelper.name, blob_name
-      end
+      expect { subject.delete_blob ContainerNameHelper.name, blob_name }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it 'errors if the blob does not exist' do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.delete_blob container_name, "unknown-blob"
-      end
+      expect { subject.delete_blob container_name, "unknown-blob" }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     describe 'when a blob has snapshots' do
@@ -60,14 +56,14 @@ describe Azure::Blob::BlobService do
         result.each { |b|
           snapshot_exists = true if b.name == blob_name and b.snapshot == snapshot
         }
-        snapshot_exists.must_equal true
+        expect(snapshot_exists).to eq(true)
 
         # delete blob
         subject.delete_blob container_name, blob_name
 
         # verify blob is gone and snapshot remains
         result = subject.list_blobs(container_name, { :snapshots=> true })
-        result.length.must_equal 0
+        expect(result.length).to eq(0)
       end
 
       it 'the snapshot parameter deletes a specific blob snapshot' do
@@ -82,7 +78,7 @@ describe Azure::Blob::BlobService do
         result.each { |b|
           snapshots += 1 if b.name == blob_name and b.snapshot != nil
         }
-        snapshots.must_equal 2
+        expect(snapshots).to eq(2)
 
         subject.delete_blob container_name, blob_name, { :snapshot => snapshot }
 
@@ -95,14 +91,12 @@ describe Azure::Blob::BlobService do
           blob_exists = true if b.name == blob_name and b.snapshot == nil
           snapshots += 1 if b.name == blob_name and b.snapshot == second_snapshot 
         }
-        blob_exists.must_equal true
-        snapshots.must_equal 1
+        expect(blob_exists).to eq(true)
+        expect(snapshots).to eq(1)
       end
 
       it 'errors if the snapshot id provided does not exist' do
-        assert_raises(Azure::Core::Http::HTTPError) do
-          subject.delete_blob container_name, blob_name, { :snapshot => "thissnapshotidisinvalid" }
-        end
+        expect { subject.delete_blob container_name, blob_name, { :snapshot => "thissnapshotidisinvalid" } }.to raise_error(Azure::Core::Http::HTTPError)
       end
 
       describe 'when :only is provided in the delete_snapshots parameter' do
@@ -115,7 +109,7 @@ describe Azure::Blob::BlobService do
           result.each { |b|
             snapshot_exists = true if b.name == blob_name and b.snapshot == snapshot
           }
-          snapshot_exists.must_equal true
+          expect(snapshot_exists).to eq(true)
 
           # delete snapshots
           subject.delete_blob container_name, blob_name, { :snapshot => nil, :delete_snapshots => :only }
@@ -129,8 +123,8 @@ describe Azure::Blob::BlobService do
             blob_exists = true if b.name == blob_name and b.snapshot == nil
             snapshot_exists = true if b.name == blob_name and b.snapshot == snapshot
           }
-          blob_exists.must_equal true
-          snapshot_exists.must_equal false
+          expect(blob_exists).to eq(true)
+          expect(snapshot_exists).to eq(false)
         end
       end
 
@@ -144,14 +138,14 @@ describe Azure::Blob::BlobService do
           result.each { |b|
             snapshot_exists = true if b.name == blob_name and b.snapshot == snapshot
           }
-          snapshot_exists.must_equal true
+          expect(snapshot_exists).to eq(true)
 
           # delete snapshots
           subject.delete_blob container_name, blob_name, { :snapshot => nil, :delete_snapshots => :include }
 
           # verify snapshot is gone and blob remains
           result = subject.list_blobs(container_name, { :snapshots=> true })
-          result.length.must_equal 0
+          expect(result.length).to eq(0)
         end
       end
     end

@@ -70,12 +70,12 @@ describe 'Table GB-18030' do
       }
       result = subject.insert_entity table_name, entity_properties
       subject.insert_entity table_name, entity_properties2
-      result.properties[prop].must_equal "value"
+      expect(result.properties[prop]).to eq("value")
       if (k != "Chinese_2B5" && k != "Tibetan") then
         filter = prop + " eq 'value'"
         result = subject.query_entities table_name, { :filter => filter }
-        result.length.must_equal 1
-        result.first.properties[prop].must_equal "value"
+        expect(result.length).to eq(1)
+        expect(result.first.properties[prop]).to eq("value")
       end
     }
   end
@@ -98,12 +98,12 @@ describe 'Table GB-18030' do
 
       result = subject.insert_entity table_name, entity_properties
       subject.insert_entity table_name, entity_properties2
-      result.properties[prop.encode("UTF-8")].must_equal "value"
+      expect(result.properties[prop.encode("UTF-8")]).to eq("value")
       if (k != "Chinese_2B5" && k != "Tibetan") then
         filter = prop + " eq 'value'"
         result = subject.query_entities table_name, { :filter => filter }
-        result.length.must_equal 1
-        result.first.properties[prop.encode("UTF-8")].must_equal "value"
+        expect(result.length).to eq(1)
+        expect(result.first.properties[prop.encode("UTF-8")]).to eq("value")
       end
     }
   end
@@ -125,11 +125,11 @@ describe 'Table GB-18030' do
       }
       result = subject.insert_entity table_name, entity_properties
       subject.insert_entity table_name, entity_properties2
-      result.properties["Value"].must_equal value
+      expect(result.properties["Value"]).to eq(value)
       filter = "Value eq '" + value + "'"
       result = subject.query_entities table_name, { :filter => filter }
-      result.length.must_equal 1
-      result.first.properties["Value"].must_equal value
+      expect(result.length).to eq(1)
+      expect(result.first.properties["Value"]).to eq(value)
     }
   end
 
@@ -150,11 +150,11 @@ describe 'Table GB-18030' do
       }
       result = subject.insert_entity table_name, entity_properties
       subject.insert_entity table_name, entity_properties2
-      result.properties["Value"].encode("UTF-8").must_equal value.encode("UTF-8")
+      expect(result.properties["Value"].encode("UTF-8")).to eq(value.encode("UTF-8"))
       filter = "Value eq '" + value + "'"
       result = subject.query_entities table_name, { :filter => filter }
-      result.length.must_equal 1
-      result.first.properties["Value"].encode("UTF-8").must_equal value.encode("UTF-8")
+      expect(result.length).to eq(1)
+      expect(result.first.properties["Value"].encode("UTF-8")).to eq(value.encode("UTF-8"))
     }
   end
 
@@ -166,20 +166,20 @@ describe 'Table GB-18030' do
         "RowKey" => value,
       }
       result = subject.insert_entity table_name, entity_properties
-      result.properties["PartitionKey"].must_equal value
-      result.properties["RowKey"].must_equal value
+      expect(result.properties["PartitionKey"]).to eq(value)
+      expect(result.properties["RowKey"]).to eq(value)
       if k != 'ChineseExtB' then
         # Service does not support surrogates in key in URL
         result = subject.get_entity(table_name, value, value)
-        result.properties["PartitionKey"].must_equal value
-        result.properties["RowKey"].must_equal value
+        expect(result.properties["PartitionKey"]).to eq(value)
+        expect(result.properties["RowKey"]).to eq(value)
         subject.delete_entity(table_name, value, value)
         begin
           # Expect error because the entity should be gone
           result = subject.get_entity(table_name, value, value)
           flunk "No exception"
         rescue Azure::Core::Http::HTTPError => error
-          error.status_code.must_equal 404
+          expect(error.status_code).to eq(404)
         end
       end
     }
@@ -193,19 +193,19 @@ describe 'Table GB-18030' do
         "RowKey" => value.encode("UTF-8")
       }
       result = subject.insert_entity table_name, entity_properties
-      result.properties["PartitionKey"].encode("UTF-8").must_equal value.encode("UTF-8")
-      result.properties["RowKey"].encode("UTF-8").must_equal value.encode("UTF-8")
+      expect(result.properties["PartitionKey"].encode("UTF-8")).to eq(value.encode("UTF-8"))
+      expect(result.properties["RowKey"].encode("UTF-8")).to eq(value.encode("UTF-8"))
       if k != 'ChineseExtB' then
         result = subject.get_entity(table_name, value, value)
-        result.properties["PartitionKey"].encode("UTF-8").must_equal value.encode("UTF-8")
-        result.properties["RowKey"].encode("UTF-8").must_equal value.encode("UTF-8")
+        expect(result.properties["PartitionKey"].encode("UTF-8")).to eq(value.encode("UTF-8"))
+        expect(result.properties["RowKey"].encode("UTF-8")).to eq(value.encode("UTF-8"))
         subject.delete_entity(table_name, value, value)
         begin
           # Expect error because the entity should be gone
           result = subject.get_entity(table_name, value, value)
           flunk "No exception"
         rescue Azure::Core::Http::HTTPError => error
-          error.status_code.must_equal 404
+          expect(error.status_code).to eq(404)
         end
       end
     }
@@ -222,12 +222,12 @@ describe 'Table GB-18030' do
       batch.insert k + counter.to_s,       { prop => "value" }
       batch.insert k + counter.to_s + "2", { prop => "value2" }
       results = subject.execute_batch batch
-      results[0].properties[prop].must_equal "value"
+      expect(results[0].properties[prop]).to eq("value")
       if (k != "Chinese_2B5" && k != "Tibetan") then
         filter = prop + " eq 'value'"
         result = subject.query_entities table_name, { :filter => filter }
-        result.length.must_equal 1
-        result.first.properties[prop.encode("UTF-8")].must_equal "value"
+        expect(result.length).to eq(1)
+        expect(result.first.properties[prop.encode("UTF-8")]).to eq("value")
       end
     }
   end
@@ -241,12 +241,12 @@ describe 'Table GB-18030' do
       batch.insert k + counter.to_s,       { prop => "value" }
       batch.insert k + counter.to_s + "2", { prop => "value2" }
       results = subject.execute_batch batch
-      results[0].properties[prop.encode("UTF-8")].must_equal "value"
+      expect(results[0].properties[prop.encode("UTF-8")]).to eq("value")
       if (k != "Chinese_2B5" && k != "Tibetan") then
         filter = prop + " eq 'value'"
         result = subject.query_entities table_name, { :filter => filter }
-        result.length.must_equal 1
-        result.first.properties[prop.encode("UTF-8")].must_equal "value"
+        expect(result.length).to eq(1)
+        expect(result.first.properties[prop.encode("UTF-8")]).to eq("value")
       end
     }
   end
@@ -260,11 +260,11 @@ describe 'Table GB-18030' do
       batch.insert k + counter.to_s,       { "key" => value }
       batch.insert k + counter.to_s + "2", { "key" => value + "2" }
       results = subject.execute_batch batch
-      results[0].properties["key"].must_equal value
+      expect(results[0].properties["key"]).to eq(value)
       filter = "key eq '" + value + "'"
       result = subject.query_entities table_name, { :filter => filter }
-      result.length.must_equal 1
-      result.first.properties["key"].encode("UTF-8").must_equal value.encode("UTF-8")
+      expect(result.length).to eq(1)
+      expect(result.first.properties["key"].encode("UTF-8")).to eq(value.encode("UTF-8"))
     }
   end
 
@@ -277,11 +277,11 @@ describe 'Table GB-18030' do
       batch.insert k + counter.to_s,       { "key" => value }
       batch.insert k + counter.to_s + "2", { "key" => value + "2" }
       results = subject.execute_batch batch
-      results[0].properties["key"].encode("UTF-8").must_equal value.encode("UTF-8")
+      expect(results[0].properties["key"].encode("UTF-8")).to eq(value.encode("UTF-8"))
       filter = "key eq '" + value + "'"
       result = subject.query_entities table_name, { :filter => filter }
-      result.length.must_equal 1
-      result.first.properties["key"].encode("UTF-8").must_equal value.encode("UTF-8")
+      expect(result.length).to eq(1)
+      expect(result.first.properties["key"].encode("UTF-8")).to eq(value.encode("UTF-8"))
     }
   end
 
@@ -294,13 +294,13 @@ describe 'Table GB-18030' do
       batch.insert value, { }
       batch.insert value + "2", { }
       results = subject.execute_batch batch
-      results[0].properties["PartitionKey"].encode("UTF-8").must_equal value.encode("UTF-8")
-      results[0].properties["RowKey"].encode("UTF-8").must_equal value.encode("UTF-8")
+      expect(results[0].properties["PartitionKey"].encode("UTF-8")).to eq(value.encode("UTF-8"))
+      expect(results[0].properties["RowKey"].encode("UTF-8")).to eq(value.encode("UTF-8"))
       if k != 'ChineseExtB' then
         # Service does not support surrogates in key in URL
         result = subject.get_entity(table_name, value, value)
-        result.properties["PartitionKey"].encode("UTF-8").must_equal value.encode("UTF-8")
-        result.properties["RowKey"].encode("UTF-8").must_equal value.encode("UTF-8")
+        expect(result.properties["PartitionKey"].encode("UTF-8")).to eq(value.encode("UTF-8"))
+        expect(result.properties["RowKey"].encode("UTF-8")).to eq(value.encode("UTF-8"))
       end
       batch = Azure::Table::Batch.new table_name, value
       batch.delete value
@@ -313,7 +313,7 @@ describe 'Table GB-18030' do
           result = subject.get_entity(table_name, value, value)
           flunk "No exception"
         rescue Azure::Core::Http::HTTPError => error
-          error.status_code.must_equal 404
+          expect(error.status_code).to eq(404)
         end
       end
     }
@@ -328,13 +328,13 @@ describe 'Table GB-18030' do
       batch.insert value, { }
       batch.insert value + "2", { }
       results = subject.execute_batch batch
-      results[0].properties["PartitionKey"].encode("UTF-8").must_equal value.encode("UTF-8")
-      results[0].properties["RowKey"].encode("UTF-8").must_equal value.encode("UTF-8")
+      expect(results[0].properties["PartitionKey"].encode("UTF-8")).to eq(value.encode("UTF-8"))
+      expect(results[0].properties["RowKey"].encode("UTF-8")).to eq(value.encode("UTF-8"))
       if k != 'ChineseExtB' then
         # Service does not support surrogates in key in URL
         result = subject.get_entity(table_name, value, value)
-        result.properties["PartitionKey"].encode("UTF-8").must_equal value.encode("UTF-8")
-        result.properties["RowKey"].encode("UTF-8").must_equal value.encode("UTF-8")
+        expect(result.properties["PartitionKey"].encode("UTF-8")).to eq(value.encode("UTF-8"))
+        expect(result.properties["RowKey"].encode("UTF-8")).to eq(value.encode("UTF-8"))
       end
       batch = Azure::Table::Batch.new table_name, value
       batch.delete value
@@ -347,7 +347,7 @@ describe 'Table GB-18030' do
           result = subject.get_entity(table_name, value, value)
           flunk "No exception"
         rescue Azure::Core::Http::HTTPError => error
-          error.status_code.must_equal 404
+          expect(error.status_code).to eq(404)
         end
       end
     }

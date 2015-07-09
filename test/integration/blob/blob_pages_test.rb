@@ -38,10 +38,10 @@ describe Azure::Blob::BlobService do
       subject.create_blob_pages container_name, blob_name, 1024, 1535, content
 
       ranges = subject.list_page_blob_ranges container_name, blob_name, { :start_range => 0, :end_range => 1536 }
-      ranges[0][0].must_equal 0
-      ranges[0][1].must_equal 511
-      ranges[1][0].must_equal 1024
-      ranges[1][1].must_equal 1535
+      expect(ranges[0][0]).to eq(0)
+      expect(ranges[0][1]).to eq(511)
+      expect(ranges[1][0]).to eq(1024)
+      expect(ranges[1][1]).to eq(1535)
     end
   end
 
@@ -52,9 +52,7 @@ describe Azure::Blob::BlobService do
 
       blob = subject.create_blob_pages container_name, blob_name2, 0, 511, content
 
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.create_blob_pages container_name, blob_name2, 1024, 1535, content, { :if_none_match => blob.properties[:etag] }
-      end
+      expect { subject.create_blob_pages container_name, blob_name2, 1024, 1535, content, { :if_none_match => blob.properties[:etag] } }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it 'if match is specified' do
@@ -76,13 +74,13 @@ describe Azure::Blob::BlobService do
       subject.create_blob_pages container_name, blob_name, 2048, 2559, content
 
       ranges = subject.list_page_blob_ranges container_name, blob_name, { :start_range => 0, :end_range => 2560 }
-      ranges.length.must_equal 3
-      ranges[0][0].must_equal 0
-      ranges[0][1].must_equal 511
-      ranges[1][0].must_equal 1024
-      ranges[1][1].must_equal 1535
-      ranges[2][0].must_equal 2048
-      ranges[2][1].must_equal 2559
+      expect(ranges.length).to eq(3)
+      expect(ranges[0][0]).to eq(0)
+      expect(ranges[0][1]).to eq(511)
+      expect(ranges[1][0]).to eq(1024)
+      expect(ranges[1][1]).to eq(1535)
+      expect(ranges[2][0]).to eq(2048)
+      expect(ranges[2][1]).to eq(2559)
     }
 
     describe 'when both start_range and end_range are specified' do
@@ -90,11 +88,11 @@ describe Azure::Blob::BlobService do
         subject.clear_blob_pages container_name, blob_name, 512, 1535
 
         ranges = subject.list_page_blob_ranges container_name, blob_name, { :start_range => 0, :end_range => 2560 }
-        ranges.length.must_equal 2
-        ranges[0][0].must_equal 0
-        ranges[0][1].must_equal 511
-        ranges[1][0].must_equal 2048
-        ranges[1][1].must_equal 2559
+        expect(ranges.length).to eq(2)
+        expect(ranges[0][0]).to eq(0)
+        expect(ranges[0][1]).to eq(511)
+        expect(ranges[1][0]).to eq(2048)
+        expect(ranges[1][1]).to eq(2559)
       end
     end
   end
@@ -110,10 +108,10 @@ describe Azure::Blob::BlobService do
 
     it 'lists the active blob pages' do
       ranges = subject.list_page_blob_ranges container_name, blob_name, { :start_range => 0, :end_range => 1536 }
-      ranges[0][0].must_equal 0
-      ranges[0][1].must_equal 511
-      ranges[1][0].must_equal 1024
-      ranges[1][1].must_equal 1535
+      expect(ranges[0][0]).to eq(0)
+      expect(ranges[0][1]).to eq(511)
+      expect(ranges[1][0]).to eq(1024)
+      expect(ranges[1][1]).to eq(1535)
     end
   end
 end

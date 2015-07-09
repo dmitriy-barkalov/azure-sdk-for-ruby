@@ -32,15 +32,11 @@ describe Azure::Blob::BlobService do
     }
 
     it 'errors if the container does not exist' do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.create_blob_snapshot ContainerNameHelper.name, blob_name
-      end
+      expect { subject.create_blob_snapshot ContainerNameHelper.name, blob_name }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it 'errors if the blob does not exist' do
-      assert_raises(Azure::Core::Http::HTTPError) do
-        subject.create_blob_snapshot container_name, "unknown-blob"
-      end
+      expect { subject.create_blob_snapshot container_name, "unknown-blob" }.to raise_error(Azure::Core::Http::HTTPError)
     end
 
     it 'creates a snapshot of blob contents, metadata, and properties' do
@@ -56,23 +52,23 @@ describe Azure::Blob::BlobService do
 
       # content/properties/metadata in blob is new version
       blob, returned_content = subject.get_blob container_name, blob_name, { :start_range => 0, :end_range => 511 }
-      returned_content.length.must_equal 512
-      returned_content.must_equal content2[0..511]
-      blob.properties[:content_type].must_equal options2[:blob_content_type]
+      expect(returned_content.length).to eq(512)
+      expect(returned_content).to eq(content2[0..511])
+      expect(blob.properties[:content_type]).to eq(options2[:blob_content_type])
       options2[:metadata].each { |k,v|
-        blob.metadata.must_include k.downcase
-        blob.metadata[k.downcase].must_equal v
+        expect(blob.metadata).to include(k.downcase)
+        expect(blob.metadata[k.downcase]).to eq(v)
       }
 
       # content/properties/metadata in snapshot is old version
       blob, returned_content = subject.get_blob container_name, blob_name, { :start_range => 0, :end_range => 511, :snapshot => snapshot }
 
-      returned_content.length.must_equal 512
-      returned_content.must_equal content[0..511]
-      blob.properties[:content_type].must_equal options[:blob_content_type]
+      expect(returned_content.length).to eq(512)
+      expect(returned_content).to eq(content[0..511])
+      expect(blob.properties[:content_type]).to eq(options[:blob_content_type])
       options[:metadata].each { |k,v|
-        blob.metadata.must_include k.downcase
-        blob.metadata[k.downcase].must_equal v
+        expect(blob.metadata).to include(k.downcase)
+        expect(blob.metadata[k.downcase]).to eq(v)
       }
 
     end
