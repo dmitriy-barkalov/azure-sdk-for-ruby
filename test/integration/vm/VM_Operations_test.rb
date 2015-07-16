@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require 'integration/test_helper'
+require_relative '../test_helper'
 
 describe Azure::VirtualMachineManagementService do
   let(:vm_name) { 'test-operation-vm' }
@@ -20,7 +20,6 @@ describe Azure::VirtualMachineManagementService do
   subject { Azure::VirtualMachineManagementService.new }
 
   before do
-    Azure::Loggerx.expects(:puts).returns(nil).at_least(0)
     params = {
       vm_name: vm_name,
       vm_user: 'user',

@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require 'integration/test_helper'
-require 'support/virtual_network_helper'
+require_relative '../test_helper'
+
 
 describe Azure::VirtualNetworkManagement::VirtualNetwork do
   let(:in_vnet_name) { 'newvnet' }
@@ -30,10 +30,6 @@ describe Azure::VirtualNetworkManagement::VirtualNetwork do
   }
 
   subject { Azure::VirtualNetworkManagementService.new }
-
-  before do
-    Azure::Loggerx.expects(:puts).returns(nil).at_least(0)
-  end
 
   describe 'Create virtual network valid params' do
     it 'Create virtual network with valid params' do

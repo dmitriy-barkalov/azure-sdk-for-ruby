@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require 'integration/test_helper'
+require_relative '../test_helper'
 
 describe Azure::VirtualMachineManagementService do
   include Azure::Core::Utility
@@ -60,10 +60,6 @@ describe Azure::VirtualMachineManagementService do
       storage_account_name: storage_account_name,
       cloud_service_name: cloud_service_name
     }
-  end
-
-  before do
-    Azure::Loggerx.expects(:puts).returns(nil).at_least(0)
   end
 
   describe '#deployment' do

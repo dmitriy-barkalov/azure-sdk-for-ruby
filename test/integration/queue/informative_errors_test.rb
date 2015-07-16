@@ -12,13 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require "integration/test_helper"
-require "azure/blob/blob_service"
-require "azure/core/http/http_error"
-
-require "integration/test_helper"
-require "azure/queue/queue_service"
-require "azure/core/http/http_error"
+require_relative '../test_helper'
 
 describe Azure::Queue::QueueService do
   subject { Azure::Queue::QueueService.new }

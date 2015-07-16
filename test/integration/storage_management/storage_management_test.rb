@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require 'integration/test_helper'
+require_relative '../test_helper'
 
 describe Azure::StorageManagementService do
 
@@ -37,10 +37,6 @@ describe Azure::StorageManagementService do
   let(:storage_name) { Time.now.getutc.to_i.to_s }
   let(:label) { 'Label Name' }
   let(:options) { { description: 'sample description' } }
-
-  before do
-    Azure::Loggerx.expects(:puts).returns(nil).at_least(0)
-  end
 
   it 'list storage accounts' do
     storagelist = subject.list_storage_accounts

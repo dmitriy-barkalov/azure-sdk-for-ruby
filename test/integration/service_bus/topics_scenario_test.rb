@@ -12,10 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require 'integration/test_helper'
-require 'integration/service_bus/scenario_test'
+require_relative '../test_helper'
 
-require 'azure/service_bus/brokered_message'
 
 describe "ServiceBus Topics Scenario" do
   let(:topic_name){ ServiceBusTopicNameHelper.name }

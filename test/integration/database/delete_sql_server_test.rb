@@ -12,13 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require 'integration/test_helper'
+require_relative '../test_helper'
 
 describe Azure::SqlDatabaseManagementService do
-
-  before {
-    Azure::Loggerx.expects(:puts).returns(nil).at_least(0)
-  }
 
   subject { Azure::SqlDatabaseManagementService.new }
   let(:login_name) { 'test_login' }

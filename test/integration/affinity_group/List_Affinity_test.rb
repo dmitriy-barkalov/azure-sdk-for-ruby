@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require 'integration/test_helper'
+require_relative '../test_helper'
 
 describe Azure::BaseManagementService do
 
@@ -20,13 +20,10 @@ describe Azure::BaseManagementService do
   let(:affinity_group_name) { AffinityGroupNameHelper.name }
 
   before do
-    Azure::Loggerx.expects(:puts).returns(nil).at_least(0)
     subject.create_affinity_group(affinity_group_name,
                                   WindowsImageLocation,
                                   'Label Name')
   end
-
-  after { AffinityGroupNameHelper.clean }
 
   describe '#list_affinity_groups' do
     it 'list affinity groups' do

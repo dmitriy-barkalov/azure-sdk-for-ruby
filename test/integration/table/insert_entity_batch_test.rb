@@ -12,10 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require "integration/test_helper"
-require "azure/table/batch"
-require "azure/table/table_service"
-require "azure/core/http/http_error"
+require_relative '../test_helper'
+
 
 describe Azure::Table::TableService do
   describe "#insert_entity_batch" do

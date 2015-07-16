@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require 'integration/test_helper'
+require_relative '../test_helper'
 
 describe Azure::CloudServiceManagementService do
   include Azure::Core::Utility
@@ -24,10 +24,6 @@ describe Azure::CloudServiceManagementService do
       location: 'West US',
       description: 'Test'
     }
-  end
-
-  before do
-    Azure::Loggerx.expects(:puts).returns(nil).at_least(0)
   end
 
   describe '#delete_cloud_service' do

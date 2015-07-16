@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require 'integration/test_helper'
+require_relative '../test_helper'
 
 describe Azure::SqlDatabaseManagementService do
 
@@ -22,7 +22,6 @@ describe Azure::SqlDatabaseManagementService do
   describe '#list_sql_server_firewall_rules' do
 
     before {
-      Azure::Loggerx.expects(:puts).returns(nil).at_least(0)
       subject.set_sql_server_firewall_rule(sql_server.name, 'rule1', '10.20.30.0', '10.20.30.255')
       subject.set_sql_server_firewall_rule(sql_server.name, 'rule2')
     }

@@ -13,7 +13,7 @@
 # limitations under the License.
 #--------------------------------------------------------------------------
 
-require 'integration/test_helper'
+require_relative '../test_helper'
 
 describe Azure::SqlDatabaseManagementService do
 
@@ -24,10 +24,6 @@ describe Azure::SqlDatabaseManagementService do
   let(:end_ip_address) { '255.255.255.255' }
 
   describe '#set_sql_server_firewall_rule' do
-
-    before {
-      Azure::Loggerx.expects(:puts).returns(nil).at_least(0)
-    }
 
     after {
       subject.delete_server(sql_server.name)

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require "integration/test_helper"
+require_relative '../test_helper'
 
 describe Azure::VirtualMachineImageManagement::VirtualMachineDiskManagementService do
 

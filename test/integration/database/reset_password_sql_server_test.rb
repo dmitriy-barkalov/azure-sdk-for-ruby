@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require 'integration/test_helper'
+require_relative '../test_helper'
 
 describe Azure::SqlDatabaseManagementService do
 
@@ -21,10 +21,6 @@ describe Azure::SqlDatabaseManagementService do
   let(:sql_server) { subject.create_server(login_name, 'User1@123', WindowsImageLocation) }
 
   describe '#reset_password' do
-
-    before {
-      Azure::Loggerx.expects(:puts).returns(nil).at_least(0)
-    }
 
     after {
       subject.delete_server(sql_server.name)

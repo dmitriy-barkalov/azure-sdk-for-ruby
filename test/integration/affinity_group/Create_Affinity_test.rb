@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require 'integration/test_helper'
+require_relative '../test_helper'
 
 describe Azure::BaseManagementService do
   include Azure::Core::Utility
@@ -20,10 +20,6 @@ describe Azure::BaseManagementService do
   subject { Azure::BaseManagementService.new }
   let(:affinity_group_name) { random_string('affinity-group-', 10) }
   let(:image_location) { WindowsImageLocation }
-
-  before do
-    Azure::Loggerx.expects(:puts).returns(nil).at_least(0)
-  end
 
   let(:label) { 'Label Name' }
   let(:options) { { description: 'sample description' } }

@@ -12,17 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require "integration/test_helper"
+require_relative '../test_helper'
 
 describe Azure::SqlDatabaseManagementService do
 
   subject { Azure::SqlDatabaseManagementService.new }
   let(:login_name) {'test_login'}
   describe '#list_servers' do
-
-    before {
-      Azure::Loggerx.expects(:puts).returns(nil).at_least(0)
-    }
 
     it 'returns a list of SQL databse servers' do
       server1 = subject.create_server(login_name, 'User1@123', WindowsImageLocation)

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require 'integration/test_helper'
+require_relative '../test_helper'
 
 describe Azure::VirtualNetworkManagement::VirtualNetwork do
 
@@ -23,7 +23,6 @@ describe Azure::VirtualNetworkManagement::VirtualNetwork do
   let(:vnet_name) { 'vnet-integration-test' }
 
   before do
-    Azure::Loggerx.expects(:puts).returns(nil).at_least(0)
     address_space = %w(172.16.0.0/12 10.0.0.0/8 192.168.0.0/24)
     unless subject.list_virtual_networks.map(&:name).include?(vnet_name)
       subject.set_network_configuration(

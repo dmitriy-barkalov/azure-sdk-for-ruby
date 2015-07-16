@@ -12,12 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require "integration/test_helper"
-require "azure/table/table_service"
-require "azure/table/query"
-require "azure/core/http/http_error"
+require_relative '../test_helper'
 
-describe Azure::Table::TableService do 
+
+describe Azure::Table::TableService do
   describe "#query_entities" do
     subject { Azure::Table::TableService.new }
     let(:table_name){ TableNameHelper.name }

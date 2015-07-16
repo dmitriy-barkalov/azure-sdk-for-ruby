@@ -13,9 +13,7 @@
 # limitations under the License.
 #--------------------------------------------------------------------------
 
-require "integration/test_helper"
-require "azure/table/table_service"
-require "azure/core/http/http_error"
+require_relative '../test_helper'
 
 describe Azure::Table::TableService do
   describe "#merge_entity" do

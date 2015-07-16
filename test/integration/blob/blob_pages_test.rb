@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require 'integration/test_helper'
-require 'azure/blob/blob_service'
+require_relative '../test_helper'
+
 
 describe Azure::Blob::BlobService do
   subject { Azure::Blob::BlobService.new }

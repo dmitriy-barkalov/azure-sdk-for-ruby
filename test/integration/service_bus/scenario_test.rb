@@ -12,9 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-require 'integration/test_helper'
-
-require 'azure/service_bus/brokered_message'
+require_relative '../test_helper'
 
 class ScenarioHelper
   def self.out(s)
